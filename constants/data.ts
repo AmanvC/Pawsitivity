@@ -69,25 +69,25 @@ export const categories = [
 
 export const settings = [
   {
-    title: "My Bookings",
+    title: "My Requests",
     icon: icons.calendar,
   },
   {
-    title: "Payments",
+    title: "Reports History",
     icon: icons.wallet,
   },
-  {
-    title: "Profile",
-    icon: icons.person,
-  },
-  {
-    title: "Notifications",
-    icon: icons.bell,
-  },
-  {
-    title: "Security",
-    icon: icons.shield,
-  },
+  // {
+  //   title: "Profile",
+  //   icon: icons.person,
+  // },
+  // {
+  //   title: "Notifications",
+  //   icon: icons.bell,
+  // },
+  // {
+  //   title: "Security",
+  //   icon: icons.shield,
+  // },
   {
     title: "Language",
     icon: icons.language,
