@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
-import { Text } from "react-native-elements";
+import { Text } from "react-native";
 
 type TProps = {
   onDateChange: (fromDate: string | null, toDate: string | null) => void

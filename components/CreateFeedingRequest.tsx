@@ -15,7 +15,7 @@ type TFormData = {
 }
 
 const CreateFeedingRequest = () => {
-  const requiredFields: (keyof TFormData)[] = ['community', 'group', 'dog', 'fromDate'];
+  const requiredFields: (keyof TFormData)[] = ['community', 'group', 'fromDate'];
 
   const [formData, setFormData] = useState<TFormData>({
     community: null,
@@ -61,6 +61,8 @@ const CreateFeedingRequest = () => {
     }, [])
   );
 
+  const dogsList = ['Sheru', 'Leechee', 'Megan', 'Dubi', 'Lambu']; // TODO - AMAN Get this list from API
+
   return (
     <SafeAreaView>
       <ScrollView className='flex-1' showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 150 }}>
@@ -81,14 +83,22 @@ const CreateFeedingRequest = () => {
             isDisabled={!formData.community}
             isRequired={requiredFields.indexOf('group') !== -1}
           />
-          <Dropdown
+          {/* <Dropdown
             dropdownKey="dog"
             dropdownTitle="Select a Dog"
             allItems={[{label: 'Sheru Lal', value: 'sheru'}, {label: 'Caspuuuu', value: 'casper'}]} 
             onChange={handleDropdownChange}
             isDisabled={!(formData.community && formData.group)}
             isRequired={requiredFields.indexOf('dog') !== -1}
-          />
+          /> */}
+          {formData.group && (
+            <View className='flex flex-row flex-wrap relative -top-3'>
+              <Text className='text-sm'>Requesting for: </Text>
+              {dogsList.map((dog, index) => (
+                <Text className='font-medium text-sm'>{dog}{dogsList.length === index + 1 ? "" : ", "}</Text>
+              ))}
+            </View>
+          )}
         </View>
 
         <DateRangePicker onDateChange={onDateChange} isRequired={true} />

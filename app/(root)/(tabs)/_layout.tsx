@@ -15,15 +15,15 @@ const TabIcon = ({
   <View className="flex-1 mt-3 flex flex-col items-center">
     <Image
       source={icon}
-      tintColor={focused ? "#0061FF" : "#666876"}
+      tintColor={focused ? "#191D31" : "#666876"}
       resizeMode="contain"
       className="size-6"
     />
     <Text
       className={`${
         focused
-          ? "text-primary-300 font-rubik-medium"
-          : "text-black-200 font-rubik"
+          ? "text-black-300 font-rubik-medium"
+          : "text-black-100 font-rubik"
       } text-xs w-full text-center mt-1`}
     >
       {title}
@@ -76,7 +76,7 @@ const TabsLayout = () => {
             ),
           }}
         />
-        <Tabs.Screen
+        {/* <Tabs.Screen // TODO - AMAN Create a new component report.tsx, and add reporting of dogs functionality there
           name="report"
           options={{
             title: "Report",
@@ -85,7 +85,7 @@ const TabsLayout = () => {
               <TabIcon focused={focused} icon={icons.person} title="Report" />
             ),
           }}
-        />
+        /> */}
         <Tabs.Screen
           name="profile"
           options={{

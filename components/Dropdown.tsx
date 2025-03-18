@@ -1,8 +1,8 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useState } from "react";
-import { View, StyleSheet, Platform } from "react-native";
+import { View, StyleSheet, Platform, Text } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
-import { Text, Icon } from "react-native-elements";
+import { Icon } from "react-native-elements";
 
 type TProps = {
   allItems: { label: string; value: string }[];
