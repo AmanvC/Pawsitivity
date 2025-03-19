@@ -1,22 +1,25 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Filters, { TFilterDataType } from './Filters'
 import icons from "@/constants/icons";
-import TableScreen from './TableScreen';
 import { Mocks } from '@/constants/mocks';
+import { Utils } from '@/lib/utils';
+import images from '@/constants/images';
 
 const RegisteredDogs = () => {
-
-  const filters = [
-    {label: 'PG Hostel', value: 'pgHostel'},
-    {label: 'Departmental Store', value: 'departmentalStore'},
-    {label: 'Old Girls Hostel', value: 'oldGirlsHostel'},
-  ]
+  const [dogsData, setDogsData] = useState<TDogItemProps[]>(Mocks.getDogsList());
+  const filters = Mocks.getDogsListFilters();
 
   const onFilterChange = (updatedFilters: TFilterDataType) => {
-    console.log({updatedFilters})
-    // TODO - AMAN Call the listing API / filter from frontend itself
+    const selectedFilters = updatedFilters.filter(filterItem => filterItem.isSelected);
+    let updatedDogsList: TDogItemProps[] = [];
+    if(selectedFilters.length === 0) {updatedDogsList = Mocks.getDogsList()}
+    selectedFilters.forEach(selectedFilterItem => {
+      const filteredList = Mocks.getDogsList().filter(dog => dog.dogMetadata.dogGroup.value === selectedFilterItem.value);
+      updatedDogsList.push(...filteredList);
+    })
+    setDogsData(updatedDogsList);
   }
 
   return (
@@ -26,8 +29,9 @@ const RegisteredDogs = () => {
           <Filters filters={filters} onFilterChange={onFilterChange} />
         </View>
         {
-          Mocks.getDogsList().map(dogItem => (
+          dogsData.map(dogItem => (
             <DogItem
+              key={dogItem.dogMetadata.dogId}
               dogMetadata={dogItem.dogMetadata}
               vaccinationDetails={dogItem.vaccinationDetails}
             />
@@ -40,10 +44,14 @@ const RegisteredDogs = () => {
 
 export type TDogItemProps = {
   dogMetadata: {
+    dogId: string;
     dogName: string;
     dob: Date;
     vaccinationStatus: 'Pending' | 'Vaccinated',
-    dogGroup: {label: string, value: string}
+    dogGroup: {label: string, value: string},
+    registrationDate: Date;
+    imageUrl?: string;
+    abcStatus: 'Done' | 'Pending'
   },
   vaccinationDetails: {
     vaccinationName: string;
@@ -56,44 +64,95 @@ const DogItem = ({dogMetadata, vaccinationDetails}: TDogItemProps): React.ReactN
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   return (
-    <TouchableOpacity
-      activeOpacity={1}
-      onPress={() => setIsExpanded(prev => !prev)}
-      // className='p-4 mb-4 rounded-md border border-gray-300 h-36'
-      className={`p-4 mb-4 rounded-md border border-gray-300 overflow-hidden ${isExpanded ? 'h-auto' : 'h-36'}`}
-    >
-      <Image source={isExpanded ? icons.chevronUp : icons.chevronDown} className='size-12 absolute right-4 top-2 text-black-300'/>
-      <View className='flex flex-row gap-5'>
-        <View className='h-20 w-20 bg-gray-100 rounded-full flex justify-center items-center'>
-          <Text>SL</Text>
+    <View className={`p-4 mb-4 rounded-md border border-gray-300 overflow-hidden ${isExpanded ? 'h-auto' : 'h-44'}`}>
+      <Image source={isExpanded ? icons.chevronUp : icons.chevronDown} className='size-12 absolute right-0 top-0 opacity-50 '/>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={() => setIsExpanded(prev => !prev)}
+      >
+        <View className='flex flex-row gap-5 mb-5'>
+          <View className='h-24 w-24 bg-gray-100 rounded-full flex justify-center items-center overflow-hidden'>
+            {dogMetadata.imageUrl ? <Image source={images.dog} resizeMode="cover" /> : <Text className='text-3xl font-medium'>{Utils.getGroupNameAvatar(dogMetadata.dogName)}</Text>}
+          </View>
+          <View className='flex-1'>
+            <Text className='text-xl font-rubik-medium'>{dogMetadata.dogName}</Text>
+            <Text>DOB: {Utils.getFormattedDate(dogMetadata.dob)}</Text>
+            <Text>Age: {Utils.getAgeString(dogMetadata.dob)}</Text>
+            <View className='flex flex-row items-center justify-evenly gap-2 p-2 w-full border border-gray-200 rounded-md mt-4'>
+              <View className='flex flex-row gap-2 items-center'>
+                <Text>Vaccination</Text>
+                <View className={`rounded-md h-6 w-6 flex items-center border justify-center ${dogMetadata.vaccinationStatus === 'Vaccinated' ? 'bg-green-100 border-green-400' : 'bg-red-100 border-red-400'}`} style={{ alignSelf: 'flex-start' }} />
+              </View>
+              <View className='border-l border-dotted border-black-100 h-5/6'/>
+              <View className='flex flex-row gap-2 items-center'>
+                <Text>ABC</Text>
+                <View className={`rounded-md h-6 w-6 flex items-center border justify-center ${dogMetadata.abcStatus === 'Done' ? 'bg-green-100 border-green-400' : 'bg-red-100 border-red-400'}`} style={{ alignSelf: 'flex-start' }} />
+              </View>
+            </View>
+          </View>
         </View>
-        <View>
-          <Text className='text-xl font-rubik-medium'>Sheru Lal</Text>
-          <Text>DOB: 24/11/18</Text>
-          <Text>Age: 6 Years</Text>
-          <Text>Vaccination Status: <Text className='text-red-600 font-rubik-medium'>Pending</Text></Text>
+      </TouchableOpacity>
+      <View>
+        <View className='pt-3 pb-3 border-t border-gray-200'>
+          {dogMetadata.imageUrl
+            ? <View className="items-center justify-center">
+                <Image 
+                  source={images.dog}
+                  // TODO - AMAN Update the source once backend is ready
+                  className="w-full rounded-lg" 
+                  resizeMode="cover"
+                />
+              </View>
+            : <Text className='text-center font-rubik-medium text-gray-300'>No Image Available!</Text>
+          }
         </View>
-      </View>
-      <View className='mt-6'>
-        <View className='mb-2 pb-3 pt-3 border-b border-t border-gray-200'>
-          <Text className='font-rubik-medium'>Last Vaccination details</Text>
-          <Text className=''>Name: <Text className='font-rubik-medium'>Rabies</Text></Text>
-          <Text className=''>Date: <Text className='font-rubik-medium'>2025-03-12</Text></Text>
-          <Text className=''>Vaccinated By: <Text className='font-rubik-medium'>Ganji Chudail</Text></Text>
-        </View>
-        <View>
+        {vaccinationDetails.length !== 0 && (
+          <View className='mb-2 pb-3 pt-3 border-t border-gray-200'>
+            <Text className='font-rubik-medium'>Last Vaccination details</Text>
+            <View>
+              <Text className=''>Name: <Text className='font-rubik-medium'>{vaccinationDetails[0].vaccinationName}</Text></Text>
+              <Text className=''>Date: <Text className='font-rubik-medium'>{Utils.getFormattedDate(vaccinationDetails[0].date)}</Text></Text>
+              <Text className=''>Vaccinated By: <Text className='font-rubik-medium'>{vaccinationDetails[0].vetName}</Text></Text>
+            </View>
+          </View>
+        )}
+        <View className='pt-3 border-t border-gray-200'>
           <Text className='font-rubik-medium mb-1'>Vaccination History</Text>
-          <TableScreen />
-          {/* <View className=''>
-
-          </View> */}
+          {vaccinationDetails.length === 0 ? <Text className='text-gray-500'>No vaccination details available!</Text> : <TableComponent vaccinationDetails={vaccinationDetails} />}
         </View>
-        <Text className='text-sm w-full text-right mt-2'>Date Registered: 2025-03-19</Text>
+        <Text className='text-xs w-full text-right mt-2 text-gray-500'>Date Registered: {Utils.getFormattedDate(dogMetadata.registrationDate)}</Text>
       </View>
-    </TouchableOpacity>
+    </View>
   )
 }
 
-export default RegisteredDogs
+const TableComponent = ({vaccinationDetails}: {vaccinationDetails: TDogItemProps['vaccinationDetails']}) => {
+  return (
+    <View className="border border-black-300">
+      {/* Table Header */}
+      <View className="flex flex-row p-0 bg-gray-200 h-12">
+        <View className="flex-1 items-center justify-center border-r border-b border-black-300 ">
+          <Text className="font-bold text-center p-2">Vaccination Name</Text>
+        </View>
+        <View className="flex-1 items-center justify-center border-b border-black-300 ">
+          <Text className="font-bold text-center p-2">Details</Text>
+        </View>
+      </View>
 
-const styles = StyleSheet.create({})
+      {/* Table Data */}
+      {vaccinationDetails.map((vaccinationDetail, index) => (
+        <View key={index} className="flex flex-row p-0 min-h-12">
+          <View className={`pt-1 pb-1 flex-1 items-center justify-center border-r border-black-300 ${index !== vaccinationDetails.length - 1 && 'border-b'}`}>
+            <Text className="text-center p-2">{vaccinationDetail.vaccinationName}</Text>
+          </View>
+          <View className={`pt-1 pb-1 flex-1 justify-center border-black-300 ${index !== vaccinationDetails.length - 1 && 'border-b'}`}>
+            <Text className="text-center">Vet: <Text className="font-rubik-medium">{vaccinationDetail.vetName}</Text></Text>
+            <Text className="text-center">Date: <Text className="font-rubik-medium">{Utils.getFormattedDate(vaccinationDetail.date)}</Text></Text>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+};
+
+export default RegisteredDogs

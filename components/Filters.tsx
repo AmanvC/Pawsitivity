@@ -12,7 +12,6 @@ const Filters = ({ filters, onFilterChange }: TFilterProps) => {
   const [filterValues, setFilterValues] = useState<TFilterDataType>(filters.map(filter => ({...filter, isSelected: false})));
 
   const onFilterSelect = (value: string, select: boolean) => {
-    console.log("onFilterSelect Called")
     const updatedFilters = filterValues.reduce((acc, curr) => {
       if(curr.value === value) acc.push({...curr, isSelected: select});
       else acc.push(curr);

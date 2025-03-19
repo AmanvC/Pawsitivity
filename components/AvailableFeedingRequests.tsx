@@ -1,5 +1,6 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
+import { Utils } from '@/lib/utils'
 
 const AvailableFeedingRequests = () => {
   return (
@@ -30,15 +31,11 @@ type TFeedingRequestBlockProps = {
 
 const FeedingRequestBlock = ({dogGroupName, dogsList, startDate, endDate}: TFeedingRequestBlockProps) => {
 
-  const getGroupNameAvatar = () => {
-    return dogGroupName.split(" ")[0].charAt(0).toUpperCase() + dogGroupName.split(" ")[1].charAt(0)?.toUpperCase()
-  }
-
   return (
     <View style={styles.requestContainer} className='p-4 mb-4 rounded-md border border-gray-300'>
       <View className='flex flex-row flex-1 gap-4'>
         <View className='h-20 w-20 bg-gray-100 rounded-full flex justify-center items-center'>
-          <Text className='text-3xl font-medium'>{getGroupNameAvatar()}</Text>  
+          <Text className='text-3xl font-medium'>{Utils.getGroupNameAvatar(dogGroupName)}</Text>  
         </View>
         <View className='flex-1'>
           <Text className='font-bold mb-2 text-lg'>{dogGroupName}</Text>
