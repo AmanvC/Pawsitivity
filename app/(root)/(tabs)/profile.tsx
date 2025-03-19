@@ -88,7 +88,7 @@ const Profile = () => {
         </View>
 
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.calendar} title="My Requests" onPress={handleComingSoon} />
+          <SettingsItem icon={icons.calendar} title="Feeding Requests" onPress={handleComingSoon} />
           <SettingsItem icon={icons.wallet} title="Reports History" onPress={handleComingSoon} />
         </View>
 

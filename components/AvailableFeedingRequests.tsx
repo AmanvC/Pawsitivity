@@ -6,7 +6,7 @@ const AvailableFeedingRequests = () => {
     <SafeAreaView className='h-full w-full'>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }}>
         <View>
-          {Array(50).fill(null).map((_, index) => (
+          {Array(10).fill(null).map((_, index) => (
             <FeedingRequestBlock
               key={index}
               dogGroupName='PG Hostel'
