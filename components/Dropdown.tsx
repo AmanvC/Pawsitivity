@@ -66,7 +66,7 @@ export default Dropdown;
 const styles = StyleSheet.create({
   required: { color: '#F75555' },
   container: {
-    marginBottom: 15,
+    // marginBottom: 15,
     position: "relative", // Ensure positioning
     zIndex: 1, // Default, lower than dropdown when closed
   },

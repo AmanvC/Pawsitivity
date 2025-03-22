@@ -66,7 +66,7 @@ const CreateFeedingRequest = () => {
   return (
     <SafeAreaView>
       <ScrollView className='flex-1' showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 150 }}>
-        <View className="flex gap-2">
+        <View className="flex gap-5">
           <Dropdown
             dropdownKey="community"
             dropdownTitle="Select Community"
@@ -116,8 +116,8 @@ const CreateFeedingRequest = () => {
           />
         </View>
 
-        <TouchableOpacity onPress={onSubmitForm}>
-          <Text className="mt-5 font-rubik-medium bg-black-300 text-blue-100 p-2 border rounded-lg text-center">Create Request</Text>
+        <TouchableOpacity onPress={onSubmitForm} activeOpacity={0.8}>
+          <Text className="mt-5 text-lg font-rubik-medium bg-black-300 text-blue-100 p-3 border rounded-lg text-center">Create Request</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

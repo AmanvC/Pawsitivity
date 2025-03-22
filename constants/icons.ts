@@ -33,6 +33,10 @@ import location from "@/assets/icons/location.png";
 import edit from "@/assets/icons/edit.png";
 import chevronDown from "@/assets/icons/chevron-down.png";
 import chevronUp from "@/assets/icons/chevron-up.png";
+import cameraWhite from "@/assets/icons/camera-white.png";
+import uploadWhite from "@/assets/icons/upload-white.png";
+import check from "@/assets/icons/check.png";
+import deleteIcon from "@/assets/icons/delete.png";
 
 export default {
   google,
@@ -69,5 +73,9 @@ export default {
   location,
   edit,
   chevronDown,
-  chevronUp
+  chevronUp,
+  cameraWhite,
+  uploadWhite,
+  check,
+  deleteIcon
 };
