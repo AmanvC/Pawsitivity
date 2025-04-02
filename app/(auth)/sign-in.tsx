@@ -1,14 +1,16 @@
 import { ActivityIndicator, Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import images from '@/constants/images';
-import icons from '@/constants/icons';
-import { Redirect } from 'expo-router';
+import { useRouter } from 'expo-router';
 import Textbox from '@/components/Textbox';
 import { useApi } from '@/lib/useApi';
+import { useAuth } from '@/context/AuthProvider';
+import { getOrCreateDeviceId } from '@/lib/secureStore';
 
 type TLoginFormData = {
   email: string;
   password: string;
+  device: string | null;
 }
 
 type TApiResponse = {
@@ -24,18 +26,17 @@ type TApiResponse = {
 const SignIn = () => {
   const [formData, setFormData] = useState<TLoginFormData>({
     email: "",
-    password: ""
+    password: "",
+    device: ""
   });
+  const router = useRouter();
 
   const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/login', data: formData});
 
-  // const { refetch, isLoggedIn } = useGlobalContext();
-
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
-
-  // if(!loading && isLoggedIn) return <Redirect href="/" />
+  const { login, user } = useAuth();
 
   const handleLogin = async () => {
+    console.log({formData})
     if(!formData.email || !formData.password) {
       Alert.alert('Warning', 'Please fill all the required fields!');
       return;
@@ -48,8 +49,26 @@ const SignIn = () => {
   }
 
   useEffect(() => {
-    console.log("*********************** : ", responseData)
+    if(responseData && responseData.token) {
+      console.log("LoggedIn Successfully!");
+      login(responseData.token);
+      router.push("/(root)/(tabs)");
+    }
   }, [responseData])
+
+  useEffect(() => {
+    const updateDeviceId = async () => {
+      const device = await getOrCreateDeviceId();
+      setFormData(prev => ({ ...prev, device }))
+    }
+    updateDeviceId();
+  }, []);
+
+  useEffect(() => {
+    console.log("AuthContext user updated:", user);
+  }, [user]);
+
+  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
 
   return (
     <SafeAreaView className='bg-white h-full w-full'>

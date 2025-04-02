@@ -1,10 +1,11 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import * as SecureStore from "expo-secure-store";
+import { getToken, removeToken, saveToken } from "@/lib/secureStore";
 
 interface AuthContextType {
   user: string | null;
   login: (token: string) => void;
   logout: () => void;
+  tokenLoaded: boolean
 }
 
 // Create Context
@@ -21,14 +22,16 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<string | null>(null);
+  const [tokenLoaded, setTokenLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const token = await SecureStore.getItemAsync("jwtToken");
+        const token = await getToken("jwtToken");
         if (token) {
           setUser(token);
         }
+        setTokenLoaded(true);
       } catch (error) {
         console.error("Error loading token:", error);
       }
@@ -37,17 +40,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (token: string) => {
-    await SecureStore.setItemAsync("jwtToken", token);
+    await saveToken("jwtToken", token);
     setUser(token);
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync("jwtToken");
+    await removeToken("jwtToken");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, tokenLoaded }}>
       {children}
     </AuthContext.Provider>
   );

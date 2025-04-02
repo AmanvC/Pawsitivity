@@ -1,10 +1,11 @@
 import { Redirect } from "expo-router";
 import { useAuth } from "@/context/AuthProvider";
+import { ActivityIndicator, View } from "react-native";
 
 export default function Index() {
-  const { user } = useAuth();
+  const { user, tokenLoaded } = useAuth();
+  
+  if (!tokenLoaded) return null;
 
-  if (user === null) return <Redirect href="/(auth)/sign-in" />;
-
-  return <Redirect href="/(root)/(tabs)" />;
+  return user ? <Redirect href="/(root)/(tabs)" /> : <Redirect href="/(auth)/sign-in" />;
 }

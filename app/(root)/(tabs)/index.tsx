@@ -1,13 +1,10 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-// import { useGlobalContext } from '@/lib/global-provider';
 import icons from '@/constants/icons';
 import Search from '@/components/Search';
 
 const index = () => {
-  // const { user } = useGlobalContext();
-  // console.log({user})
 
   const onJoinCommunity = () => {};
 

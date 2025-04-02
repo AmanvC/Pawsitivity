@@ -14,6 +14,10 @@ import {
 
 import icons from "@/constants/icons";
 import { settings } from "@/constants/data";
+import { useAuth } from "@/context/AuthProvider";
+import { useApi } from "@/lib/useApi";
+import { useEffect } from "react";
+import { useRouter } from "expo-router";
 
 interface SettingsItemProp {
   icon: ImageSourcePropType;
@@ -45,18 +49,33 @@ const SettingsItem = ({
   </TouchableOpacity>
 );
 
+type TApiResponse = {
+  status: "SUCCESS" | "FAILURE",
+  message: string
+}
+
 const Profile = () => {
-//   const { user, refetch } = useGlobalContext();
+
+  const router = useRouter();
+  const { logout, user } = useAuth();
+  const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/logout', data: {token: user}});
 
   const handleLogout = async () => {
-    // const result = await logout();
-    // if (result) {
-    //   Alert.alert("Success", "Logged out successfully");
-    //   // refetch();
-    // } else {
-    //   Alert.alert("Error", "Failed to logout");
-    // }
+    console.log({user})
+    callApi();
   };
+
+  useEffect(() => {
+    if(responseData) {
+      if(responseData.status === 'SUCCESS') {
+        logout();
+        Alert.alert("Success", "Logged out successfully");
+        router.push("/(auth)/sign-in");
+      } else {
+        Alert.alert('Error', 'Failed to logout!')
+      }
+    }
+  }, [responseData]);
 
   const handleComingSoon = () => {
     Alert.alert('Coming Soon!', 'Thank-you for showing interest, this section will be launched soon.');

@@ -17,12 +17,12 @@ export const useApi = <TData>({method, url, data}: ApiParams) => {
   const callApi = async () => {
     setLoading(true);
     setError(null);
-    console.log("API Call Triggered: ", data);
 
     try {
-      console.log({URL: baseUrl + url})
+      console.log({"API URL": baseUrl + url})
+      console.log({"API Payload": data})
       const response = await axios({
-        method: 'post',
+        method,
         url: baseUrl + url,
         data,
       });
