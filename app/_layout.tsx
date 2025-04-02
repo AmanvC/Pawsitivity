@@ -1,30 +1,33 @@
-import { SplashScreen, Stack } from "expo-router";
 import "./globals.css";
-import { useFonts } from 'expo-font';
-import { useEffect } from "react";
-import GlobalProvider from "@/lib/global-provider";
+import { useFonts } from "expo-font";
+import { Slot, SplashScreen } from "expo-router";
+import { useEffect, useState } from "react";
+import { AuthProvider } from "@/context/AuthProvider";
 
-export default function RootLayout() {
+export default function AppLayout() {
   const [fontsLoaded] = useFonts({
-    "Rubik-bold": require('../assets/fonts/Rubik-Bold.ttf'),
-    "Rubik-ExtraBold": require('../assets/fonts/Rubik-ExtraBold.ttf'),
-    "Rubik-Light": require('../assets/fonts/Rubik-Light.ttf'),
-    "Rubik-Medium": require('../assets/fonts/Rubik-Medium.ttf'),
-    "Rubik-Regular": require('../assets/fonts/Rubik-Regular.ttf'),
-    "Rubik-SemiBold": require('../assets/fonts/Rubik-SemiBold.ttf'),
-  })
+    "Rubik-bold": require("../assets/fonts/Rubik-Bold.ttf"),
+    "Rubik-ExtraBold": require("../assets/fonts/Rubik-ExtraBold.ttf"),
+    "Rubik-Light": require("../assets/fonts/Rubik-Light.ttf"),
+    "Rubik-Medium": require("../assets/fonts/Rubik-Medium.ttf"),
+    "Rubik-Regular": require("../assets/fonts/Rubik-Regular.ttf"),
+    "Rubik-SemiBold": require("../assets/fonts/Rubik-SemiBold.ttf"),
+  });
+
+  const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
-    if(fontsLoaded) {
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
+      setAppReady(true);
     }
   }, [fontsLoaded]);
 
-  if(!fontsLoaded) return null;
+  if (!appReady) return null;
 
   return (
-    <GlobalProvider>
-      <Stack  screenOptions={{ headerShown: false }} />
-    </GlobalProvider>
+    <AuthProvider>
+      <Slot />
+    </AuthProvider>
   );
 }

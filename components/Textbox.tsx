@@ -10,9 +10,10 @@ type TProps = {
   onChange: (key: string, text: string) => void
   isRequired?: boolean
   placeholder?: string
+  isHidden?: boolean
 }
 
-const Textbox = ({ formKey, title, maxLength = 100, value, onChange, isRequired = true, placeholder }: TProps) => {
+const Textbox = ({ formKey, title, maxLength = 100, value, onChange, isRequired = true, placeholder, isHidden = false }: TProps) => {
   const [inputValue, setInputValue] = useState<string | null>(null);
 
   useFocusEffect(
@@ -38,6 +39,7 @@ const Textbox = ({ formKey, title, maxLength = 100, value, onChange, isRequired 
         onChangeText={handleChange}
         placeholder={placeholder}
         placeholderTextColor={'lightgray'}
+        secureTextEntry={isHidden}
         value={inputValue || ''}
         className="p-3 border rounded-xl mt-2 border-primary-200 align-top"
       />

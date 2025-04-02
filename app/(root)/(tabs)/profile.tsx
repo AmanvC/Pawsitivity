@@ -9,8 +9,8 @@ import {
   View,
 } from "react-native";
 
-import { logout } from "@/lib/appwrite";
-import { useGlobalContext } from "@/lib/global-provider";
+// import { logout } from "@/lib/appwrite";
+// import { useGlobalContext } from "@/lib/global-provider";
 
 import icons from "@/constants/icons";
 import { settings } from "@/constants/data";
@@ -46,16 +46,16 @@ const SettingsItem = ({
 );
 
 const Profile = () => {
-  const { user, refetch } = useGlobalContext();
+//   const { user, refetch } = useGlobalContext();
 
   const handleLogout = async () => {
-    const result = await logout();
-    if (result) {
-      Alert.alert("Success", "Logged out successfully");
-      refetch();
-    } else {
-      Alert.alert("Error", "Failed to logout");
-    }
+    // const result = await logout();
+    // if (result) {
+    //   Alert.alert("Success", "Logged out successfully");
+    //   // refetch();
+    // } else {
+    //   Alert.alert("Error", "Failed to logout");
+    // }
   };
 
   const handleComingSoon = () => {
@@ -75,15 +75,13 @@ const Profile = () => {
 
         <View className="flex flex-row justify-center mt-5">
           <View className="flex flex-col items-center relative mt-5">
-            <Image
+            {/* TODO - AMAN Fix this */}
+            {/* <Image
               source={{ uri: user?.avatar }}
               className="size-44 relative rounded-full"
             />
-            {/* <TouchableOpacity className="absolute bottom-11 right-2">
-              <Image source={icons.edit} className="size-9" />
-            </TouchableOpacity> */}
 
-            <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text>
+            <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text> */}
           </View>
         </View>
 
