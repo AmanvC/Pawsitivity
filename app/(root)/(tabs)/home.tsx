@@ -5,10 +5,13 @@ import icons from '@/constants/icons';
 import Search from '@/components/Search';
 import { useAuth } from '@/context/AuthProvider';
 import { Utils } from '@/lib/utils';
+import images from '@/constants/images';
 
 const index = () => {
 
-  const { user } = useAuth();
+  const { user, selectedCommunity } = useAuth();
+  console.log({user})
+  console.log({selectedCommunity})
 
   const onJoinCommunity = () => {};
 
@@ -35,9 +38,15 @@ const index = () => {
           <Image source={icons.bell} className="size-6" />
         </View>
 
-        <View className="flex mt-10">
-          <Text className="font-rubik-medium text-4xl text-blue-900 mb-8">Welcome to Pawsitivity</Text>
-          <View className="flex flex-row justify-between items-center border-b pb-3 border-primary-200">
+        <View className="mt-10">
+          <Text className="font-rubik-medium text-4xl text-blue-900 text-center">Welcome to Pawsitivity</Text>
+          <Image source={images.dogHi} className='w-full h-5/6' resizeMode='contain' />
+          <View className='w-full flex flex-row justify-center items-center relative bottom-10'>
+            <Text className='text-2xl font-rubik-medium text-blue-900'>Pause for Paws </Text>
+            <Image source={images.paws} className='h-10 w-10' resizeMode='contain' />
+          </View>
+
+          {/* <View className="flex flex-row justify-between items-center border-b pb-3 border-primary-200">
             <Text className="font-rubik-medium text-3xl text-black-300">Communities</Text>
             <TouchableOpacity onPress={onJoinCommunity}>
               <Text className="font-rubik-medium text-black-300 p-2 border rounded-lg">Join</Text>
@@ -54,7 +63,7 @@ const index = () => {
                 </View>
               ))}
             </View>
-          </ScrollView>
+          </ScrollView> */}
 
         </View>
       </View>

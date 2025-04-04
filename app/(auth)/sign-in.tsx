@@ -1,12 +1,12 @@
-import { ActivityIndicator, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import images from '@/constants/images';
-import { useRouter } from 'expo-router';
 import Textbox from '@/components/Textbox';
 import { useApi } from '@/lib/useApi';
 import { useAuth } from '@/context/AuthProvider';
-import { getOrCreateDeviceId } from '@/lib/secureStore';
 import { showFailureToast, showInfoToast, showSuccessToast } from '@/lib/toastHandler';
+import Loader from '@/components/Loader';
+import { Utils } from '@/lib/utils';
 
 type TLoginFormData = {
   email: string;
@@ -30,7 +30,6 @@ const SignIn = () => {
     password: "",
     device: ""
   });
-  const router = useRouter();
 
   const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/login', data: formData});
   const { callApi: forceLogin, error: forceError, responseData: forcedLoginData } = useApi<TApiResponse>({method: 'POST', url: 'auth/force-login', data: formData})
@@ -60,7 +59,7 @@ const SignIn = () => {
       if(responseData.token) {
         console.log("LoggedIn Successfully!");
         login(responseData.token);
-        router.push("/(root)/(tabs)");
+        // router.push("/(root)/(tabs)/home");
       } else if (responseData.options) {
         forceLogin();
       }
@@ -78,7 +77,7 @@ const SignIn = () => {
         // Alert.alert('Multiple device logins!', 'You have been logged out from the previous logged in device.');
         showSuccessToast('Multiple device logins!', 'Logged out from previous device.');
         login(forcedLoginData.token);
-        router.push("/(root)/(tabs)");
+        // router.push("/(root)/(tabs)/home");
       }
     }
   }, [forcedLoginData]);
@@ -89,7 +88,7 @@ const SignIn = () => {
 
   useEffect(() => {
     const updateDeviceId = async () => {
-      const device = await getOrCreateDeviceId();
+      const device = await Utils.getOrCreateDeviceId();
       setFormData(prev => ({ ...prev, device }))
     }
     updateDeviceId();
@@ -99,10 +98,9 @@ const SignIn = () => {
     console.log("AuthContext user updated:", user);
   }, [user]);
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
-
   return (
     <SafeAreaView className='bg-white h-full w-full'>
+      {loading && <Loader />}
       <ScrollView contentContainerClassName='h-full px-2 flex flex-col'>
         <Image source={images.dog} className='w-full  rounded-xl' resizeMode='contain' />
         <View className='px-10 -mt-10'>

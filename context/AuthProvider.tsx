@@ -1,11 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import { getToken, removeToken, saveToken } from "@/lib/secureStore";
+import { getKey, removeKey, saveKey } from "@/lib/secureStore";
 import { jwtDecode } from "jwt-decode";
+import { useRouter } from "expo-router";
+import { ESecureStoreKeys } from "@/lib/types";
 
 export interface IUser {
   data: {
     name: string;
     email: string;
+    joinedCommunities: {_id: string, communityName: string}[]
   }
 }
 
@@ -15,6 +18,7 @@ interface AuthContextType {
   logout: () => void;
   tokenLoaded: boolean;
   jwtToken: string | null;
+  selectedCommunity: IUser['data']['joinedCommunities'][number] | null
 }
 
 // Create Context
@@ -33,11 +37,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<IUser | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
   const [tokenLoaded, setTokenLoaded] = useState<boolean>(false);
+  const [selectedCommunity, setSelectedCommunity] = useState<IUser['data']['joinedCommunities'][number] | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const token = await getToken("jwtToken");
+        const selectedCommunity = await getKey(ESecureStoreKeys.SELECTED_COMMUNITY);
+        console.log({loadUserSelectedCommunity: selectedCommunity})
+        if(selectedCommunity) setSelectedCommunity(JSON.parse(selectedCommunity));
+        const token = await getKey(ESecureStoreKeys.JWT_TOKEN);
         if (token) {
           const decodedToken = jwtDecode<IUser>(token);
           setUser(decodedToken);
@@ -52,20 +62,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (token: string) => {
-    await saveToken("jwtToken", token);
+    await saveKey(ESecureStoreKeys.JWT_TOKEN, token);
     const decodedToken = jwtDecode<IUser>(token);
+    const selectedCommunity = await getKey(ESecureStoreKeys.SELECTED_COMMUNITY);
+    console.log({loginSelectedCommunity: selectedCommunity})
+    if(!selectedCommunity) {
+      await saveKey(ESecureStoreKeys.SELECTED_COMMUNITY, JSON.stringify(decodedToken.data.joinedCommunities[0]));
+    }
+    router.push("/(root)/(tabs)/home");
     setUser(decodedToken);
     setJwtToken(token);
   };
 
   const logout = async () => {
-    await removeToken("jwtToken");
+    await removeKey(ESecureStoreKeys.JWT_TOKEN);
+    router.push("/(auth)/sign-in");
     setUser(null);
     setJwtToken(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, tokenLoaded, jwtToken }}>
+    <AuthContext.Provider value={{ user, login, logout, tokenLoaded, jwtToken, selectedCommunity }}>
       {children}
     </AuthContext.Provider>
   );

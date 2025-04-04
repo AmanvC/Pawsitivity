@@ -1,3 +1,7 @@
+import { getKey, saveKey } from "./secureStore";
+import uuid from 'react-native-uuid';
+import { ESecureStoreKeys } from "./types";
+
 export const Utils = {
   getFormattedDate(date: Date) {
     return date.toLocaleDateString('en-GB').split('/').join('-');
@@ -24,5 +28,20 @@ export const Utils = {
     return namesList[1] 
       ? namesList[0].charAt(0).toUpperCase() + namesList[1].charAt(0).toUpperCase()
       : namesList[0].charAt(0).toUpperCase();
+  },
+
+  async getOrCreateDeviceId()  {
+    try {
+      let deviceId = await getKey(ESecureStoreKeys.DEVICE_ID);
+      
+      if (!deviceId) {
+        deviceId = uuid.v4();
+        await saveKey(ESecureStoreKeys.DEVICE_ID, deviceId);
+      }
+      return deviceId;
+    } catch (err) {
+      console.log("Error in generating uuid!");
+      return "";
+    }
   }
 }

@@ -1,5 +1,4 @@
 import {
-  Alert,
   Image,
   ImageSourcePropType,
   SafeAreaView,
@@ -14,9 +13,9 @@ import { settings } from "@/constants/data";
 import { useAuth } from "@/context/AuthProvider";
 import { useApi } from "@/lib/useApi";
 import { useEffect } from "react";
-import { useRouter } from "expo-router";
 import { showFailureToast, showInfoToast, showSuccessToast } from "@/lib/toastHandler";
 import { Utils } from "@/lib/utils";
+import Loader from "@/components/Loader";
 
 interface SettingsItemProp {
   icon: ImageSourcePropType;
@@ -54,8 +53,6 @@ type TApiResponse = {
 }
 
 const Profile = () => {
-
-  const router = useRouter();
   const { logout, user, jwtToken } = useAuth();
   const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/logout', data: {token: jwtToken}});
 
@@ -68,7 +65,7 @@ const Profile = () => {
       if(responseData.status === 'SUCCESS') {
         logout();
         showSuccessToast('Logged out successfully.');
-        router.push("/(auth)/sign-in");
+        // router.push("/(auth)/sign-in");
       } else {
         showFailureToast('Something went wrong!', 'Failed to logout!');
       }
@@ -87,6 +84,7 @@ const Profile = () => {
 
   return (
     <SafeAreaView className="h-full bg-white">
+      {loading && <Loader />}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerClassName="pb-32 px-5"
@@ -99,7 +97,7 @@ const Profile = () => {
         <View className="flex flex-row justify-center mt-5">
           <View className="flex flex-col items-center relative mt-5">
             <View className="bg-black-300 rounded-full h-44 w-44 flex items-center justify-center">
-              <Text className="text-8xl text-white">{Utils.getGroupNameAvatar(user?.data.name || '')}</Text>
+              <Text className="text-8xl text-white relative top-3">{Utils.getGroupNameAvatar(user?.data.name || '')}</Text>
             </View>
             <Text className="text-2xl font-rubik-bold mt-2">{user?.data.name}</Text>
           </View>
