@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import images from '@/constants/images';
 import { useRouter } from 'expo-router';
@@ -6,6 +6,7 @@ import Textbox from '@/components/Textbox';
 import { useApi } from '@/lib/useApi';
 import { useAuth } from '@/context/AuthProvider';
 import { getOrCreateDeviceId } from '@/lib/secureStore';
+import { showFailureToast, showInfoToast, showSuccessToast } from '@/lib/toastHandler';
 
 type TLoginFormData = {
   email: string;
@@ -32,13 +33,18 @@ const SignIn = () => {
   const router = useRouter();
 
   const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/login', data: formData});
+  const { callApi: forceLogin, error: forceError, responseData: forcedLoginData } = useApi<TApiResponse>({method: 'POST', url: 'auth/force-login', data: formData})
 
   const { login, user } = useAuth();
 
   const handleLogin = async () => {
     console.log({formData})
+    if (!formData.device) {
+      showFailureToast('Something went wrong!', 'Please contact the developer!')
+      return;
+    }
     if(!formData.email || !formData.password) {
-      Alert.alert('Warning', 'Please fill all the required fields!');
+      showInfoToast('Warning', 'Please fill all the required fields!');
       return;
     }
     callApi();
@@ -49,12 +55,37 @@ const SignIn = () => {
   }
 
   useEffect(() => {
-    if(responseData && responseData.token) {
-      console.log("LoggedIn Successfully!");
-      login(responseData.token);
-      router.push("/(root)/(tabs)");
+    if(responseData) {
+      console.log({responseData})
+      if(responseData.token) {
+        console.log("LoggedIn Successfully!");
+        login(responseData.token);
+        router.push("/(root)/(tabs)");
+      } else if (responseData.options) {
+        forceLogin();
+      }
     }
   }, [responseData])
+
+  useEffect(() => {
+    if(error) showFailureToast('Something went wrong!', error);
+  }, [error])
+
+  useEffect(() => {
+    if(forcedLoginData) {
+      console.log({forcedLoginData})
+      if(forcedLoginData.token) {
+        // Alert.alert('Multiple device logins!', 'You have been logged out from the previous logged in device.');
+        showSuccessToast('Multiple device logins!', 'Logged out from previous device.');
+        login(forcedLoginData.token);
+        router.push("/(root)/(tabs)");
+      }
+    }
+  }, [forcedLoginData]);
+
+  useEffect(() => {
+    if(forceError) showFailureToast('Something went wrong!', forceError);
+  }, [forceError])
 
   useEffect(() => {
     const updateDeviceId = async () => {
@@ -86,6 +117,7 @@ const SignIn = () => {
             onChange={handleValueChange}
             isRequired={true}
             placeholder='abc@d.com'
+            clearValue={false}
           />
           <Textbox
             formKey='password'
@@ -96,11 +128,12 @@ const SignIn = () => {
             onChange={handleValueChange}
             isRequired={true}
             placeholder='*****'
+            clearValue={false}
           />
           <TouchableOpacity onPress={handleLogin} activeOpacity={0.8} >
             <Text className="text-lg font-rubik-medium bg-black-300 text-blue-100 p-3 border rounded-lg text-center">Login</Text>
           </TouchableOpacity>
-          {error && <Text className='text-danger text-center'>*{error.message}</Text>}
+          {error && <Text className='text-danger text-center'>*{error}</Text>}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -108,5 +141,3 @@ const SignIn = () => {
 }
 
 export default SignIn;
-
-const styles = StyleSheet.create({})

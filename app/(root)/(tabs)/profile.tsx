@@ -9,15 +9,14 @@ import {
   View,
 } from "react-native";
 
-// import { logout } from "@/lib/appwrite";
-// import { useGlobalContext } from "@/lib/global-provider";
-
 import icons from "@/constants/icons";
 import { settings } from "@/constants/data";
 import { useAuth } from "@/context/AuthProvider";
 import { useApi } from "@/lib/useApi";
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
+import { showFailureToast, showInfoToast, showSuccessToast } from "@/lib/toastHandler";
+import { Utils } from "@/lib/utils";
 
 interface SettingsItemProp {
   icon: ImageSourcePropType;
@@ -57,11 +56,10 @@ type TApiResponse = {
 const Profile = () => {
 
   const router = useRouter();
-  const { logout, user } = useAuth();
-  const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/logout', data: {token: user}});
+  const { logout, user, jwtToken } = useAuth();
+  const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/logout', data: {token: jwtToken}});
 
   const handleLogout = async () => {
-    console.log({user})
     callApi();
   };
 
@@ -69,16 +67,22 @@ const Profile = () => {
     if(responseData) {
       if(responseData.status === 'SUCCESS') {
         logout();
-        Alert.alert("Success", "Logged out successfully");
+        showSuccessToast('Logged out successfully.');
         router.push("/(auth)/sign-in");
       } else {
-        Alert.alert('Error', 'Failed to logout!')
+        showFailureToast('Something went wrong!', 'Failed to logout!');
       }
     }
   }, [responseData]);
 
+  useEffect(() => {
+    if(error) {
+      showFailureToast('Something went wrong!', error)
+    }
+  }, [error]);
+
   const handleComingSoon = () => {
-    Alert.alert('Coming Soon!', 'Thank-you for showing interest, this section will be launched soon.');
+    showInfoToast('Coming Soon!', 'Thank-you for showing interest, this section will be launched soon.');
   }
 
   return (
@@ -94,13 +98,10 @@ const Profile = () => {
 
         <View className="flex flex-row justify-center mt-5">
           <View className="flex flex-col items-center relative mt-5">
-            {/* TODO - AMAN Fix this */}
-            {/* <Image
-              source={{ uri: user?.avatar }}
-              className="size-44 relative rounded-full"
-            />
-
-            <Text className="text-2xl font-rubik-bold mt-2">{user?.name}</Text> */}
+            <View className="bg-black-300 rounded-full h-44 w-44 flex items-center justify-center">
+              <Text className="text-8xl text-white">{Utils.getGroupNameAvatar(user?.data.name || '')}</Text>
+            </View>
+            <Text className="text-2xl font-rubik-bold mt-2">{user?.data.name}</Text>
           </View>
         </View>
 

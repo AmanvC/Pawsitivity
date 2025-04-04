@@ -6,6 +6,7 @@ import Textbox from './Textbox'
 import { useFocusEffect } from 'expo-router'
 import Checkbox from './Checkbox'
 import icons from '@/constants/icons'
+import { showInfoToast } from '@/lib/toastHandler'
 
 type TFormData = {
   community: string | null,
@@ -50,7 +51,7 @@ const CreateNewDog = () => {
       if(!detail.vaccinationName) isValid = false;
     })
     if(!isValid) {
-      Alert.alert('Error', 'Please fill all the required fields!');
+      showInfoToast('Error', 'Please fill all the required fields!')
       return;
     }
   }

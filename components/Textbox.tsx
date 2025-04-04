@@ -11,16 +11,17 @@ type TProps = {
   isRequired?: boolean
   placeholder?: string
   isHidden?: boolean
+  clearValue?: boolean
 }
 
-const Textbox = ({ formKey, title, maxLength = 100, value, onChange, isRequired = true, placeholder, isHidden = false }: TProps) => {
+const Textbox = ({ formKey, title, maxLength = 100, value, onChange, isRequired = true, placeholder, isHidden = false, clearValue = true }: TProps) => {
   const [inputValue, setInputValue] = useState<string | null>(null);
 
-  useFocusEffect(
+  {clearValue && useFocusEffect(
     useCallback(() => {
       setInputValue(null);
     }, [])
-  );
+  )};
 
   useEffect(() => { setInputValue(value) }, [value]);
 
