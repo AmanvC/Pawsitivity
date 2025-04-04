@@ -4,7 +4,8 @@ import { ESecureStoreKeys } from "./types";
 
 export const Utils = {
   getFormattedDate(date: Date) {
-    return date.toLocaleDateString('en-GB').split('/').join('-');
+    const updatedDate = new Date(date); // because mongodb stores date in ISO 8601 format
+    return updatedDate.toLocaleDateString('en-GB').split('/').join('-');
   },
   getAgeString(dob: Date) {
     let years =  (new Date()).getFullYear() - dob.getFullYear();

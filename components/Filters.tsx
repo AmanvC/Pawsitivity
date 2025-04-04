@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 type TFilterProps = {
   filters: {label: string, value: string}[];
@@ -9,7 +9,11 @@ type TFilterProps = {
 export type TFilterDataType = {label: string, value: string, isSelected: boolean}[];
 
 const Filters = ({ filters, onFilterChange }: TFilterProps) => {
-  const [filterValues, setFilterValues] = useState<TFilterDataType>(filters.map(filter => ({...filter, isSelected: false})));
+  const [filterValues, setFilterValues] = useState<TFilterDataType>([]);
+
+  useEffect(() => {
+    setFilterValues(filters.map(filter => ({...filter, isSelected: false})));
+  }, [filters])
 
   const onFilterSelect = (value: string, select: boolean) => {
     const updatedFilters = filterValues.reduce((acc, curr) => {
@@ -25,9 +29,7 @@ const Filters = ({ filters, onFilterChange }: TFilterProps) => {
     <View className='flex flex-row gap-2 flex-wrap'>
      {filterValues.map((filter, index) => (
         <View key={index} className={`px-3 py-2 rounded-lg flex flex-row flex-wrap gap-2 items-center ${filter.isSelected ? 'bg-black-300' : 'bg-primary-100'}`}>
-          {/* TODO - AMAN Update key to filter.value */}
           <Text onPress={() => onFilterSelect(filter.value, !filter.isSelected)} className={`${filter.isSelected ? 'text-white' : 'text-black-300'}`}>{filter.label}</Text>
-          {/* {filter.isSelected && <Text className='text-white'>x</Text>} */}
         </View>
      ))}
     </View>
