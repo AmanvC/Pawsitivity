@@ -17,11 +17,11 @@ const RegisteredDogs = () => {
   
   const { selectedCommunity } = useAuth();
 
-  useEffect(() => {
-    callApi();
-  }, []);
+  const { callApi, responseData, loading, error } = useApi<TRESPONSE_GetRegisteredDogs>({ method: 'POST', url: 'dog/getAll'})
 
-  const { callApi, responseData, loading, error } = useApi<TRESPONSE_GetRegisteredDogs>({ method: 'POST', url: 'dog/getAll', data: { communityId: selectedCommunity?._id } as TREQUEST_GetRegisteredDogs })
+  useEffect(() => {
+    callApi({ communityId: selectedCommunity?._id } as TREQUEST_GetRegisteredDogs);
+  }, []);
 
   useEffect(() => {
     if(responseData) {

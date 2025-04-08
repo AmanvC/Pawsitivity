@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 type TabItem = {
@@ -13,6 +14,12 @@ type SideBySideTabsProps = {
 
 const SideBySideTabs: React.FC<SideBySideTabsProps> = ({ tabs, currentActiveTab }) => {
   const [activeTab, setActiveTab] = useState(currentActiveTab ? currentActiveTab : 0);
+
+  useFocusEffect(
+    useCallback(() => {
+      setActiveTab(0);
+    }, [])
+  );
 
   return (
     <View style={styles.container}>

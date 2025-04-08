@@ -54,10 +54,10 @@ type TApiResponse = {
 
 const Profile = () => {
   const { logout, user, jwtToken } = useAuth();
-  const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/logout', data: {token: jwtToken}});
+  const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/logout'});
 
   const handleLogout = async () => {
-    callApi();
+    callApi({ token: jwtToken });
   };
 
   useEffect(() => {

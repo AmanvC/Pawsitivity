@@ -1,5 +1,5 @@
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, StyleSheet, Platform, Text } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Icon } from "react-native-elements";
@@ -18,14 +18,24 @@ const Dropdown = ({
   dropdownKey,
   allItems,
   dropdownTitle,
-  preSelectedValue,
+  // preSelectedValue,
   onChange,
   isDisabled,
   isRequired
 }: TProps) => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(preSelectedValue || null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [value, setValue] = useState<string | null>(null);
   const [items, setItems] = useState(allItems);
+
+  useEffect(() => {
+    if (JSON.stringify(items) !== JSON.stringify(allItems)) {
+      setItems(allItems);
+    }
+    if(allItems.length === 1) {
+      setValue(allItems[0].value);
+      onChange(dropdownKey, allItems[0].value);
+    }
+  }, [allItems]);
 
   useFocusEffect(
     useCallback(() => {

@@ -31,8 +31,8 @@ const SignIn = () => {
     device: ""
   });
 
-  const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/login', data: formData});
-  const { callApi: forceLogin, error: forceError, responseData: forcedLoginData } = useApi<TApiResponse>({method: 'POST', url: 'auth/force-login', data: formData})
+  const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/login' });
+  const { callApi: forceLogin, error: forceError, responseData: forcedLoginData } = useApi<TApiResponse>({method: 'POST', url: 'auth/force-login'})
 
   const { login, user } = useAuth();
 
@@ -46,7 +46,7 @@ const SignIn = () => {
       showInfoToast('Warning', 'Please fill all the required fields!');
       return;
     }
-    callApi();
+    callApi(formData);
   }
 
   const handleValueChange = (formKey: string, selectedValue: string) => {
@@ -61,7 +61,7 @@ const SignIn = () => {
         login(responseData.token);
         // router.push("/(root)/(tabs)/home");
       } else if (responseData.options) {
-        forceLogin();
+        forceLogin(formData);
       }
     }
   }, [responseData])

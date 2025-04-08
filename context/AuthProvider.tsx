@@ -45,7 +45,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loadUser = async () => {
       try {
         const selectedCommunity = await getKey(ESecureStoreKeys.SELECTED_COMMUNITY);
-        console.log({loadUserSelectedCommunity: selectedCommunity})
         if(selectedCommunity) setSelectedCommunity(JSON.parse(selectedCommunity));
         const token = await getKey(ESecureStoreKeys.JWT_TOKEN);
         if (token) {
@@ -65,13 +64,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await saveKey(ESecureStoreKeys.JWT_TOKEN, token);
     const decodedToken = jwtDecode<IUser>(token);
     const selectedCommunity = await getKey(ESecureStoreKeys.SELECTED_COMMUNITY);
-    console.log({loginSelectedCommunity: selectedCommunity})
     if(!selectedCommunity) {
       await saveKey(ESecureStoreKeys.SELECTED_COMMUNITY, JSON.stringify(decodedToken.data.joinedCommunities[0]));
     }
-    router.push("/(root)/(tabs)/home");
     setUser(decodedToken);
     setJwtToken(token);
+    router.push("/(root)/(tabs)/home");
   };
 
   const logout = async () => {

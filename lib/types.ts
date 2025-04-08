@@ -4,9 +4,19 @@ export enum ESecureStoreKeys {
   DEVICE_ID = "DEVICE_ID"
 }
 
-export enum TApiStatus {
+export enum EApiEndpoints {
+  GetDogGroupsInfoInACommunity = "common/getAllInfo",
+  CreateDog = "dog/create"
+}
+
+export enum EApiStatus {
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE"
+}
+
+export type TApiGenericResponse = {
+  status: EApiStatus;
+  message: string
 }
 
 export type TFilterType = {
@@ -48,7 +58,25 @@ export type TRegisteredDogDTO = {
 }
 
 export type TRESPONSE_GetRegisteredDogs = {
-  status: TApiStatus;
+  status: EApiStatus;
   filters: TRegisteredDogsFilter[];
   dogsList: TRegisteredDogDTO[]
+}
+
+export type TREQUEST_GetAllCommunityDogGroupsAndDogInfo = TREQUEST_GetRegisteredDogs;
+
+export type TRESPONSE_GetAllCommunityDogGroupsAndDogInfo = {
+  status: EApiStatus,
+  data: {
+    _id: string;
+    communityName: string;
+    dogGroups: {
+      _id: string;
+      groupName: string;
+      dogs: {
+        _id: string;
+        dogName: string;
+      }[]
+    }[]
+  }[]
 }

@@ -1,4 +1,4 @@
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import ImageUploader from './ImageUploader'
 import Dropdown from './Dropdown'
@@ -6,7 +6,19 @@ import Textbox from './Textbox'
 import { useFocusEffect } from 'expo-router'
 import Checkbox from './Checkbox'
 import icons from '@/constants/icons'
-import { showInfoToast } from '@/lib/toastHandler'
+import { showFailureToast, showInfoToast, showSuccessToast } from '@/lib/toastHandler'
+import { useApi } from '@/lib/useApi'
+import {
+  EApiEndpoints,
+  TApiGenericResponse,
+  TFilterType,
+  TREQUEST_GetAllCommunityDogGroupsAndDogInfo,
+  TRESPONSE_GetAllCommunityDogGroupsAndDogInfo
+} from '@/lib/types'
+import { useAuth } from '@/context/AuthProvider'
+import Loader from './Loader'
+import * as MediaLibrary from 'expo-media-library';
+import { Utils } from '@/lib/utils'
 
 type TFormData = {
   community: string | null,
@@ -15,7 +27,11 @@ type TFormData = {
   dob: string | null,
   vaccinationStatus: boolean,
   abcStatus: boolean,
-  image: string | null,
+  image: {
+    uri: string;
+    type: string;
+    name: string;
+  } | null,
   vaccinationDetails: TVaccinationDetailsFormData[]
 }
 
@@ -30,31 +46,115 @@ const defaultValues: TFormData = {
   vaccinationDetails: []
 }
 
-const requiredFields: (keyof TFormData)[] = ['community', 'group', 'dogName', 'dob', 'vaccinationStatus', 'abcStatus', 'image'];
+const requiredFields: (keyof TFormData)[] = ['community', 'group', 'dogName', 'vaccinationStatus', 'abcStatus', 'image'];
 
 const CreateNewDog = () => {
-  const [formData, setFormData] = useState<TFormData>(defaultValues);
 
-  const handleValueChange = (formKey: string, selectedValue: string | boolean | null) => {
+  const FormData = global.FormData;
+
+  const [formData, setFormData] = useState<TFormData>(defaultValues);
+  const [communityFilterItems, setCommunityFilterItems] = useState<TFilterType[]>([]);
+  const [dogGroupFilterItems, setDogGroupFilterItems] = useState<TFilterType[]>([]);
+
+  const { selectedCommunity, user } = useAuth();
+
+  const { callApi: getDogGroupsInfo, responseData: dogGroupsInfoRes, error: dogGroupInfoError, loading: dogGroupsLoading } = useApi<TRESPONSE_GetAllCommunityDogGroupsAndDogInfo>({ method: 'POST', url: EApiEndpoints.GetDogGroupsInfoInACommunity});
+
+  const { responseData: createDogResponse, error: createDogError, loading: createDogLoading, callApiUsingFetch } = useApi<TApiGenericResponse>({ method: 'POST', url: EApiEndpoints.CreateDog })
+  
+  useEffect(() => {
+    getAllInfo();
+  }, []);
+
+  const getAllInfo = () => {
+    getDogGroupsInfo({ communityId: selectedCommunity?._id } as TREQUEST_GetAllCommunityDogGroupsAndDogInfo );
+  }
+
+  useEffect(() => {
+    if(dogGroupsInfoRes && dogGroupsInfoRes.data) {
+      setCommunityFilterItems(dogGroupsInfoRes.data.map(community => ({ label: community.communityName, value: community._id })));
+    }
+  }, [dogGroupsInfoRes])
+
+  const handleValueChange = (formKey: string, selectedValue: TFormData[keyof TFormData]) => {
     setFormData(prev => ({...prev, [formKey]: selectedValue}));
   }
 
-  const onSubmitForm = () => {
-    console.log({formData: JSON.stringify(formData)});
+  useEffect(() => {
+    if (!formData.community || !dogGroupsInfoRes?.data) return;
+    const selectedCommunity = dogGroupsInfoRes.data.find(data => data._id === formData.community);
+    if (selectedCommunity) {
+      setDogGroupFilterItems(selectedCommunity.dogGroups.map(group => ({
+        label: group.groupName,
+        value: group._id
+      })));
+    }
+  }, [formData.community, dogGroupsInfoRes]);
+
+  const onSubmitForm = async () => {
     let isValid = true;
+  
     requiredFields.forEach(field => {
-      if(formData[field] == null) {
+      if (formData[field] == null) {
         isValid = false;
       }
     });
-    formData.vaccinationDetails.map(detail => {
-      if(!detail.vaccinationName) isValid = false;
-    })
-    if(!isValid) {
-      showInfoToast('Error', 'Please fill all the required fields!')
+  
+    formData.vaccinationDetails.forEach(detail => {
+      if (!detail.vaccinationName) isValid = false;
+    });
+    if (!isValid) {
+      showInfoToast('Error', 'Please fill all the required fields!');
       return;
     }
-  }
+    let formattedDate: Date | null = null;
+    if(formData.dob) {
+      const isValid = Utils.checkCorrectDateFormat(formData.dob);
+      if(!isValid) {
+        showInfoToast("Invalid Date. Please enter in the given format!");
+        return;
+      }
+      const [day, month, year] = formData.dob.split('-');
+      formattedDate = new Date(Number(year), Number(month) - 1, Number(day))
+    }
+    console.log({formattedDate})
+    const apiFormData = new FormData();
+    apiFormData.append("communityId", formData.community as string);
+    apiFormData.append("dogGroupId", formData.group as string);
+    apiFormData.append("dogName", formData.dogName as string);
+    apiFormData.append("dob", formattedDate ? String(formattedDate) : "");
+    apiFormData.append("abcStatus", String(formData.abcStatus));
+    apiFormData.append("vaccinationStatus", String(formData.vaccinationStatus));
+    apiFormData.append("vaccinationDetails", JSON.stringify(formData.vaccinationDetails));
+  
+    if (formData.image) {
+      const imageData = {
+        uri: formData.image.uri,
+        name: formData.image.name || `photo_${Date.now()}.jpg`,
+        type: 'image/png',
+      };
+  
+      apiFormData.append("image", imageData as any);
+    }
+    callApiUsingFetch(apiFormData);
+  };
+  
+
+  useEffect(() => {
+    if(createDogResponse) {
+      if(createDogResponse.status === 'SUCCESS') {
+        showSuccessToast(createDogResponse.message);
+        setFormData(defaultValues);
+      }
+      console.log({createDogResponse})
+    }
+  }, [createDogResponse]);
+
+  useEffect(() => {
+    if(createDogError) {
+      showFailureToast(createDogError);
+    }
+  }, [createDogError])
 
   const handleAddVaccinationDetailsBlock = () => {
     setFormData(prev => {
@@ -94,84 +194,111 @@ const CreateNewDog = () => {
 
   useFocusEffect(
     useCallback(() => {
+      getAllInfo();
       setFormData(defaultValues);
     }, [])
   );
 
   return (
     <SafeAreaView className='h-full w-full'>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }}>
-      <View className="flex gap-5">
-          <Dropdown
-            dropdownKey="community"
-            dropdownTitle="Select Community"
-            allItems={[{label: 'AIIMS Jodhpur', value: 'aiimsJodhpur'}]} 
-            onChange={handleValueChange}
-            isDisabled={false}
-            isRequired={requiredFields.indexOf('community') !== -1}
-          />
-          <Dropdown
-            dropdownKey="group"
-            dropdownTitle="Select dog group"
-            allItems={[{label: 'PG Hostel', value: 'pgHostel'}, {label: 'Old Girls Hostel', value: 'ogHostel'}]} 
-            onChange={handleValueChange}
-            isDisabled={!formData.community}
-            isRequired={requiredFields.indexOf('group') !== -1}
-          />
-          <Textbox
-            formKey='dogName'
-            title='Dog Name'
-            maxLength={100}
-            value={formData.dogName}
-            onChange={handleValueChange}
-            isRequired={requiredFields.indexOf('dogName') !== -1}
-            placeholder='Sheru'
-          />
-          <Textbox
-            formKey='dob'
-            title='Date of Birth'
-            maxLength={10}
-            value={formData.dob}
-            onChange={handleValueChange}
-            isRequired={requiredFields.indexOf('dob') !== -1}
-            placeholder='dd-mm-yyyy'
-          />
-          <View className=''>
-            <View className='flex flex-row justify-between items-end mb-2'>
-              <Text>Vaccination Details</Text>
-              <TouchableOpacity className='mr-2' onPress={handleAddVaccinationDetailsBlock}><Text className='p-2 border rounded-lg'>+ Add</Text></TouchableOpacity>
-            </View>
-            <View className='p-4 pt-6 border border-primary-200 bg-gray-200 rounded-lg flex gap-5'>
-              {formData.vaccinationDetails.length == 0 ? <Text className='text-center text-gray-500 relative -top-1'>Click + Add to start adding vaccination details</Text> : (
-                formData.vaccinationDetails.map((_, index) => (
-                  <VaccinationDetailsBlock
-                    key={index}
-                    values={formData.vaccinationDetails[index]}
-                    onDelete={() => handleDeleteVaccinationDetailsBlock(index)}
-                    onUpdate={(updatedData) => handleUpdateVaccinationDetails(updatedData, index)}
-                  />
-                ))
-              )}
-            </View>
-          </View>
-          <View className='flex flex-row justify-evenly'>
-            <Checkbox label="ABC Done" formKey='abcStatus' onChange={handleValueChange} />
-            <Checkbox
-              label="Vaccination Status"
-              formKey='vaccinationStatus'
+      {(dogGroupsLoading || createDogLoading) && <Loader />}
+      {dogGroupInfoError ? <View>
+        <Text className='text-center mt-5'>Something went wrong!</Text>
+        <TouchableOpacity onPress={() => getAllInfo()} activeOpacity={0.8} className='bg-slate-400 w-[50%] self-center mt-3 p-5 rounded-lg'>
+          <Text className='text-center color-white font-bold text-xl'>Retry</Text>
+        </TouchableOpacity>
+      </View> : (
+        <FlatList
+        data={[]} // No actual list items
+        renderItem={null as any}
+        keyExtractor={() => 'form'} // Prevent key warning
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 130 }}
+        ListHeaderComponent={
+          <View className="flex gap-5">
+            <Dropdown
+              dropdownKey="community"
+              dropdownTitle="Select Community"
+              allItems={communityFilterItems}
               onChange={handleValueChange}
-              isDisabled={true}
-              isChecked={formData.vaccinationStatus}
-              additionalInfo="Updated automatically!"
+              isDisabled={false}
+              isRequired={requiredFields.indexOf('community') !== -1}
             />
+            <Dropdown
+              dropdownKey="group"
+              dropdownTitle="Select dog group"
+              allItems={dogGroupFilterItems}
+              onChange={handleValueChange}
+              isDisabled={!formData.community}
+              isRequired={requiredFields.indexOf('group') !== -1}
+            />
+            <Textbox
+              formKey='dogName'
+              title='Dog Name'
+              maxLength={100}
+              value={formData.dogName}
+              onChange={handleValueChange}
+              isRequired={requiredFields.indexOf('dogName') !== -1}
+              placeholder='Sheru'
+            />
+            <Textbox
+              formKey='dob'
+              title='Date of Birth'
+              maxLength={10}
+              value={formData.dob}
+              onChange={handleValueChange}
+              isRequired={requiredFields.indexOf('dob') !== -1}
+              placeholder='dd-mm-yyyy'
+            />
+            <View>
+              <View className='flex flex-row justify-between items-end mb-2'>
+                <Text>Vaccination Details</Text>
+                <TouchableOpacity className='mr-2' onPress={handleAddVaccinationDetailsBlock}>
+                  <Text className='p-2 border rounded-lg'>+ Add</Text>
+                </TouchableOpacity>
+              </View>
+              <View className='p-4 pt-6 border border-primary-200 bg-gray-200 rounded-lg flex gap-5'>
+                {formData.vaccinationDetails.length === 0 ? (
+                  <Text className='text-center text-gray-500 relative -top-1'>
+                    Click + Add to start adding vaccination details
+                  </Text>
+                ) : (
+                  formData.vaccinationDetails.map((_, index) => (
+                    <VaccinationDetailsBlock
+                      key={index}
+                      values={formData.vaccinationDetails[index]}
+                      onDelete={() => handleDeleteVaccinationDetailsBlock(index)}
+                      onUpdate={(updatedData) => handleUpdateVaccinationDetails(updatedData, index)}
+                    />
+                  ))
+                )}
+              </View>
+            </View>
+            <View className='flex flex-row justify-evenly'>
+              <Checkbox label="ABC Done" formKey='abcStatus' onChange={handleValueChange} />
+              <Checkbox
+                label="Vaccination Status"
+                formKey='vaccinationStatus'
+                onChange={handleValueChange}
+                isDisabled={true}
+                isChecked={formData.vaccinationStatus}
+                additionalInfo="Updated automatically!"
+              />
+            </View>
+            <ImageUploader formKey="image" isImageAvailable={formData.image ? true : false} onChange={(formKey, imageData) => handleValueChange(formKey, imageData)} />
+            <TouchableOpacity onPress={onSubmitForm} activeOpacity={0.8}>
+              <Text className='text-xs text-danger mb-1 opacity-80'>
+                *This information cannot be updated!
+              </Text>
+              <Text className="mb-5 text-lg font-rubik-medium bg-black-300 text-blue-100 p-3 border rounded-lg text-center">
+                Create 🐶
+              </Text>
+            </TouchableOpacity>
           </View>
-          <ImageUploader formKey="image" onChange={handleValueChange} />
-          <TouchableOpacity onPress={onSubmitForm} activeOpacity={0.8} >
-            <Text className='text-xs text-danger mb-1 opacity-80'>*This information cannot be updated!</Text>
-            <Text className="mb-5 text-lg font-rubik-medium bg-black-300 text-blue-100 p-3 border rounded-lg text-center">Create 🐶</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        }
+      />
+      )}
+      
     </SafeAreaView>
   )
 }
@@ -245,6 +372,4 @@ const VaccinationDetailsBlock = ({ values, onDelete, onUpdate }: { values: TVacc
   )
 }
 
-export default CreateNewDog
-
-const styles = StyleSheet.create({})
+export default CreateNewDog;

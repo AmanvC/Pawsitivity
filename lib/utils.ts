@@ -7,9 +7,10 @@ export const Utils = {
     const updatedDate = new Date(date); // because mongodb stores date in ISO 8601 format
     return updatedDate.toLocaleDateString('en-GB').split('/').join('-');
   },
-  getAgeString(dob: Date) {
-    let years =  (new Date()).getFullYear() - dob.getFullYear();
-    let months = (new Date()).getMonth() - dob.getMonth();
+  getAgeString(dob: Date | string) {
+    const updatedDob = new Date(dob);
+    let years =  (new Date()).getFullYear() - updatedDob.getFullYear();
+    let months = (new Date()).getMonth() - updatedDob.getMonth();
 
     // Adjust if the end month is before the start month
     if (months < 0) {
@@ -44,5 +45,21 @@ export const Utils = {
       console.log("Error in generating uuid!");
       return "";
     }
+  },
+
+  checkCorrectDateFormat(dateStr: string): boolean {
+    const [dayStr, monthStr, yearStr] = dateStr.split("-");
+    const day = Number(dayStr);
+    const month = Number(monthStr);
+    const year = Number(yearStr);
+
+    if(!day || !month || !year) return false;
+    const date = new Date(year, month - 1, day); // months are 0-indexed
+
+    return (
+      date.getFullYear() === year &&
+      date.getMonth() === month - 1 &&
+      date.getDate() === day
+    );
   }
 }
