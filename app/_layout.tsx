@@ -4,6 +4,7 @@ import { Slot, SplashScreen } from "expo-router";
 import { useEffect, useState } from "react";
 import { AuthProvider } from "@/context/AuthProvider";
 import Toast from "react-native-toast-message";
+import { toastConfig } from "@/lib/toastConfig";
 
 export default function AppLayout() {
   const [fontsLoaded] = useFonts({
@@ -29,7 +30,7 @@ export default function AppLayout() {
   return (
     <AuthProvider>
       <Slot />
-      <Toast />
+      <Toast config={toastConfig} />
     </AuthProvider>
   );
 }
