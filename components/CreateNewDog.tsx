@@ -104,7 +104,7 @@ const CreateNewDog = () => {
       if (!detail.vaccinationName) isValid = false;
     });
     if (!isValid) {
-      showInfoToast('Error', 'Please fill all the required fields!');
+      showInfoToast('Please fill all the required fields!');
       return;
     }
     let formattedDate: Date | null = null;
@@ -146,7 +146,6 @@ const CreateNewDog = () => {
         showSuccessToast(createDogResponse.message);
         setFormData(defaultValues);
       }
-      console.log({createDogResponse})
     }
   }, [createDogResponse]);
 
@@ -198,6 +197,12 @@ const CreateNewDog = () => {
       setFormData(defaultValues);
     }, [])
   );
+
+  if(!selectedCommunity) {
+    return (
+      <Text>You haven't joined any community yet! Please contact admin at : <Text className='font-bold'>amanvarshney.varshney@gmail.com</Text></Text>
+    )
+  }
 
   return (
     <SafeAreaView className='h-full w-full'>

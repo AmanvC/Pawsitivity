@@ -63,16 +63,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (token: string) => {
     await saveKey(ESecureStoreKeys.JWT_TOKEN, token);
     const decodedToken = jwtDecode<IUser>(token);
-    const selectedCommunity = await getKey(ESecureStoreKeys.SELECTED_COMMUNITY);
-    if(!selectedCommunity) {
-      await saveKey(ESecureStoreKeys.SELECTED_COMMUNITY, JSON.stringify(decodedToken.data.joinedCommunities[0]));
-    }
+    await saveKey(ESecureStoreKeys.SELECTED_COMMUNITY, JSON.stringify(decodedToken.data.joinedCommunities[0]) || '');
     setUser(decodedToken);
     setJwtToken(token);
     router.push("/(root)/(tabs)/home");
   };
 
   const logout = async () => {
+    await removeKey(ESecureStoreKeys.SELECTED_COMMUNITY);
     await removeKey(ESecureStoreKeys.JWT_TOKEN);
     router.push("/(auth)/sign-in");
     setUser(null);

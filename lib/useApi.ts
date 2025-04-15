@@ -7,7 +7,7 @@ import { ESecureStoreKeys } from './types';
 import { showFailureToast } from './toastHandler';
 
 interface ApiParams {
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   url: string;
   data?: any
 }

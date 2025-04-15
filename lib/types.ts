@@ -6,7 +6,10 @@ export enum ESecureStoreKeys {
 
 export enum EApiEndpoints {
   GetDogGroupsInfoInACommunity = "common/getAllInfo",
-  CreateDog = "dog/create"
+  CreateDog = "dog/create",
+  CreateFeedingRequest = "feedingRequest/create",
+  GetAllPendingFeedingRequests = "feedingRequest/get/pending",
+  AcceptFeedingRequest = "feedingRequest/accept"
 }
 
 export enum EApiStatus {
@@ -79,4 +82,50 @@ export type TRESPONSE_GetAllCommunityDogGroupsAndDogInfo = {
       }[]
     }[]
   }[]
+}
+
+export type TREQUEST_CreateFeedingRequest = {
+  communityId: string;
+  dogGroupId: string;
+  fromDate: string;
+  toDate?: string | null;
+  message?: string | null;
+}
+
+export type TREQUEST_GetPendingFeedingRequests = {
+  communityId: string;
+}
+
+enum EFeedingRequestStatus {
+  ACCEPTED = "ACCEPTED",
+  PENDING = "PENDING"
+}
+
+export type TRESPONSE_GetPendingFeedingRequests = {
+  status: EApiStatus,
+  data: {
+    _id: string;
+    requestStatus: {
+      status: EFeedingRequestStatus,
+      acceptedBy?: string;
+      acceptedOn?: Date
+    };
+    createdBy: {
+      name: string;
+    };
+    dogGroup: {
+      groupName: string;
+      dogs: {
+        dogName: string;
+      }[]
+    };
+    fromDate: Date;
+    toDate: Date;
+    message: string | null;
+    createdAt: Date;
+  }[];
+}
+
+export type TREQUEST_AcceptFeedingRequest = {
+  feedingRequestId: string;
 }

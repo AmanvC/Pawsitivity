@@ -1,42 +1,25 @@
-import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { Text } from "react-native";
 
 type TProps = {
-  onDateChange: (fromDate: string | null, toDate: string | null) => void
-  isRequired: boolean
-}
+  onDateChange: (fromDate: string | null, toDate: string | null) => void;
+  isRequired: boolean;
+  range: { startDate: string | null; endDate: string | null };
+};
 
-const DateRangePicker = ({onDateChange, isRequired}: TProps) => {
-  const [range, setRange] = useState<{ startDate: string | null; endDate: string | null }>({
-    startDate: null,
-    endDate: null,
-  });
-
+const DateRangePicker = ({ onDateChange, isRequired, range }: TProps) => {
   const today = new Date().toISOString().split("T")[0];
-
-  useFocusEffect(
-    useCallback(() => {
-      setRange({
-        startDate: null,
-        endDate: null
-      });
-    }, [])
-  );
 
   const onDayPress = (day: { dateString: string }) => {
     if (!range.startDate || (range.startDate && range.endDate)) {
       onDateChange(day.dateString, null);
-      setRange({ startDate: day.dateString, endDate: null });
     } else {
       if (new Date(day.dateString) > new Date(range.startDate)) {
         onDateChange(range.startDate, day.dateString);
-        setRange({ ...range, endDate: day.dateString });
       } else {
         onDateChange(day.dateString, null);
-        setRange({ startDate: day.dateString, endDate: null });
       }
     }
   };
@@ -45,22 +28,21 @@ const DateRangePicker = ({onDateChange, isRequired}: TProps) => {
     let markedDates: { [key: string]: any } = {};
 
     if (range.startDate) {
-      markedDates[range.startDate] = { 
-        startingDay: true, 
+      markedDates[range.startDate] = {
+        startingDay: true,
         endingDay: !range.endDate,
-        color: "#0061FF", 
-        textColor: "white" 
+        color: "#0061FF",
+        textColor: "white",
       };
     }
 
     if (range.endDate) {
-      markedDates[range.endDate] = { 
-        endingDay: true, 
-        color: "#0061FF", 
-        textColor: "white" 
+      markedDates[range.endDate] = {
+        endingDay: true,
+        color: "#0061FF",
+        textColor: "white",
       };
 
-      
       let currentDate = new Date(range.startDate!);
       while (currentDate < new Date(range.endDate)) {
         const dateString = currentDate.toISOString().split("T")[0];
@@ -89,13 +71,17 @@ const DateRangePicker = ({onDateChange, isRequired}: TProps) => {
           arrowColor: "#0061FF",
         }}
       />
-      {range.startDate && <Text style={styles.selectedDateRange}>
-        Selected: {range.startDate && !range.endDate && `${range.startDate}`}
-        {range.startDate && range.endDate && `${range.startDate} → ${range.endDate}`}
-      </Text>}
+      {range.startDate && (
+        <Text style={styles.selectedDateRange}>
+          Selected:{" "}
+          {range.startDate && !range.endDate && `${range.startDate}`}
+          {range.startDate && range.endDate && `${range.startDate} → ${range.endDate}`}
+        </Text>
+      )}
     </View>
   );
 };
+
 
 export default DateRangePicker;
 

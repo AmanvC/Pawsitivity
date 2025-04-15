@@ -1,5 +1,5 @@
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Filters, { TFilterDataType } from './Filters'
 import icons from "@/constants/icons";
@@ -9,6 +9,7 @@ import { TFilterType, TRegisteredDogDTO, TREQUEST_GetRegisteredDogs, TRESPONSE_G
 import { useAuth } from '@/context/AuthProvider';
 import Loader from './Loader';
 import { showFailureToast } from '@/lib/toastHandler';
+import { useFocusEffect } from 'expo-router';
 
 const RegisteredDogs = () => {
   const [dogsData, setDogsData] = useState<TRegisteredDogDTO[]>([]);
@@ -20,8 +21,16 @@ const RegisteredDogs = () => {
   const { callApi, responseData, loading, error } = useApi<TRESPONSE_GetRegisteredDogs>({ method: 'POST', url: 'dog/getAll'})
 
   useEffect(() => {
-    callApi({ communityId: selectedCommunity?._id } as TREQUEST_GetRegisteredDogs);
+    if(!selectedCommunity) return;
+    callApi({ communityId: selectedCommunity._id } as TREQUEST_GetRegisteredDogs);
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      setDogsData([]);
+      callApi({ communityId: selectedCommunity?._id } as TREQUEST_GetRegisteredDogs);
+    }, [])
+  );
 
   useEffect(() => {
     if(responseData) {
@@ -51,6 +60,12 @@ const RegisteredDogs = () => {
       updatedDogsList.push(...filteredList);
     })
     setFilteredDogsData(updatedDogsList);
+  }
+
+  if(!selectedCommunity) {
+    return (
+      <Text>You haven't joined any community yet! Please contact admin at : <Text className='font-bold'>amanvarshney.varshney@gmail.com</Text></Text>
+    )
   }
 
   return (

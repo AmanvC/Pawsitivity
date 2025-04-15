@@ -105,7 +105,7 @@ const Profile = () => {
 
         <View className="flex flex-col mt-10">
           <SettingsItem icon={icons.calendar} title="Feeding Requests" onPress={handleComingSoon} />
-          <SettingsItem icon={icons.wallet} title="Reports History" onPress={handleComingSoon} />
+          {/* <SettingsItem icon={icons.wallet} title="Reports History" onPress={handleComingSoon} /> */}
         </View>
 
         <View className="flex flex-col mt-5 border-t pt-5 border-primary-200">
