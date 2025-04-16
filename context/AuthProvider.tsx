@@ -66,7 +66,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await saveKey(ESecureStoreKeys.SELECTED_COMMUNITY, JSON.stringify(decodedToken.data.joinedCommunities[0]) || '');
     setUser(decodedToken);
     setJwtToken(token);
-    router.push("/(root)/(tabs)/home");
+    // Since useState set calls are asynchronous, when the user logs in for the first time, the community would be null, then the user will be sent to homepage, then only state would be updated. So making router call asynchronous.
+    setTimeout(() => {
+      router.push("/(root)/(tabs)/home");
+    }, 0);
   };
 
   const logout = async () => {
