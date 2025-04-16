@@ -85,7 +85,6 @@ const CreateFeedingRequest = () => {
   }
 
   const onSubmitForm = () => {
-    console.log({formData});
     let isValid = true;
     requiredFields.forEach(field => {
       if(!formData[field]) {

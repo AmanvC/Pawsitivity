@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { showFailureToast, showInfoToast, showSuccessToast } from "@/lib/toastHandler";
 import { Utils } from "@/lib/utils";
 import Loader from "@/components/Loader";
+import { useRouter } from "expo-router";
 
 interface SettingsItemProp {
   icon: ImageSourcePropType;
@@ -56,6 +57,8 @@ const Profile = () => {
   const { logout, user, jwtToken } = useAuth();
   const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/logout'});
 
+  const router = useRouter();
+
   const handleLogout = async () => {
     callApi({ token: jwtToken });
   };
@@ -79,7 +82,11 @@ const Profile = () => {
   }, [error]);
 
   const handleComingSoon = () => {
-    showInfoToast('Coming Soon!', 'Thank-you for showing interest, this section will be launched soon.');
+    showInfoToast("Thankyou for showing interest! This section will be launching soon.")
+  }
+
+  const goToFeedingRequestHistoryPage = () => {
+    router.push('/feedingRequestsHistory');
   }
 
   return (
@@ -104,7 +111,7 @@ const Profile = () => {
         </View>
 
         <View className="flex flex-col mt-10">
-          <SettingsItem icon={icons.calendar} title="Feeding Requests" onPress={handleComingSoon} />
+          <SettingsItem icon={icons.calendar} title="Feeding Requests" onPress={goToFeedingRequestHistoryPage} />
           {/* <SettingsItem icon={icons.wallet} title="Reports History" onPress={handleComingSoon} /> */}
         </View>
 

@@ -117,7 +117,6 @@ const CreateNewDog = () => {
       const [day, month, year] = formData.dob.split('-');
       formattedDate = new Date(Number(year), Number(month) - 1, Number(day))
     }
-    console.log({formattedDate})
     const apiFormData = new FormData();
     apiFormData.append("communityId", formData.community as string);
     apiFormData.append("dogGroupId", formData.group as string);
@@ -172,7 +171,6 @@ const CreateNewDog = () => {
   }
 
   const handleDeleteVaccinationDetailsBlock = (index: number) => {
-    console.log("Delete " + index + " Called");
     setFormData(prev => ({
       ...prev,
       vaccinationDetails: prev.vaccinationDetails.filter((_, i) => i !== index)

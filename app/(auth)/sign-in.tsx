@@ -37,7 +37,6 @@ const SignIn = () => {
   const { login, user } = useAuth();
 
   const handleLogin = async () => {
-    console.log({formData})
     if (!formData.device) {
       showFailureToast('Something went wrong!', 'Please contact the developer!')
       return;
@@ -55,11 +54,9 @@ const SignIn = () => {
 
   useEffect(() => {
     if(responseData) {
-      console.log({responseData})
       if(responseData.token) {
         console.log("LoggedIn Successfully!");
         login(responseData.token);
-        // router.push("/(root)/(tabs)/home");
       } else if (responseData.options) {
         forceLogin(formData);
       }
@@ -72,12 +69,9 @@ const SignIn = () => {
 
   useEffect(() => {
     if(forcedLoginData) {
-      console.log({forcedLoginData})
       if(forcedLoginData.token) {
-        // Alert.alert('Multiple device logins!', 'You have been logged out from the previous logged in device.');
         showSuccessToast('Multiple device logins!', 'Logged out from previous device.');
         login(forcedLoginData.token);
-        // router.push("/(root)/(tabs)/home");
       }
     }
   }, [forcedLoginData]);

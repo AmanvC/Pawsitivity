@@ -10,8 +10,6 @@ import images from '@/constants/images';
 const index = () => {
 
   const { user, selectedCommunity } = useAuth();
-  console.log({user})
-  console.log({selectedCommunity})
 
   const onJoinCommunity = () => {};
 

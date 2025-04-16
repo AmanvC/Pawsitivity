@@ -9,7 +9,9 @@ export enum EApiEndpoints {
   CreateDog = "dog/create",
   CreateFeedingRequest = "feedingRequest/create",
   GetAllPendingFeedingRequests = "feedingRequest/get/pending",
-  AcceptFeedingRequest = "feedingRequest/accept"
+  AcceptFeedingRequest = "feedingRequest/accept",
+  GetAllUserCreatedFeedingRequests = "feedingRequest/get/userCreated",
+  GetAllUserAcceptedFeedingRequests = "feedingRequest/get/userAccepted"
 }
 
 export enum EApiStatus {
@@ -107,7 +109,9 @@ export type TRESPONSE_GetPendingFeedingRequests = {
     _id: string;
     requestStatus: {
       status: EFeedingRequestStatus,
-      acceptedBy?: string;
+      acceptedBy?: {
+        name: string;
+      };
       acceptedOn?: Date
     };
     createdBy: {
@@ -129,3 +133,7 @@ export type TRESPONSE_GetPendingFeedingRequests = {
 export type TREQUEST_AcceptFeedingRequest = {
   feedingRequestId: string;
 }
+
+export type TRESPONSE_GetUserCreatedFeedingRequests = TRESPONSE_GetPendingFeedingRequests;
+
+export type TRESPONSE_GetUserAcceptedFeedingRequests = TRESPONSE_GetPendingFeedingRequests;

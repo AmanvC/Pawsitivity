@@ -14,7 +14,7 @@ export const toastConfig: ToastConfig = {
       {...props}
       text1NumberOfLines={0}
       text2NumberOfLines={0}
-      style={{ height: 'auto', padding: 20 }}
+      style={{ height: 'auto', padding: 20, borderColor: 'lightblue' }}
     />
   ),
   error: (props) => (
