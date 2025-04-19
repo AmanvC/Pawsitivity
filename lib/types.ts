@@ -5,13 +5,16 @@ export enum ESecureStoreKeys {
 }
 
 export enum EApiEndpoints {
+  Login = "auth/login",
+  ForceLogin = "auth/force-login",
   GetDogGroupsInfoInACommunity = "common/getAllInfo",
   CreateDog = "dog/create",
   CreateFeedingRequest = "feedingRequest/create",
   GetAllPendingFeedingRequests = "feedingRequest/get/pending",
   AcceptFeedingRequest = "feedingRequest/accept",
   GetAllUserCreatedFeedingRequests = "feedingRequest/get/userCreated",
-  GetAllUserAcceptedFeedingRequests = "feedingRequest/get/userAccepted"
+  GetAllUserAcceptedFeedingRequests = "feedingRequest/get/userAccepted",
+  SaveExpoPushToken = "common/save/expoPushToken"
 }
 
 export enum EApiStatus {

@@ -7,6 +7,8 @@ import { useAuth } from '@/context/AuthProvider';
 import { showFailureToast, showInfoToast, showSuccessToast } from '@/lib/toastHandler';
 import Loader from '@/components/Loader';
 import { Utils } from '@/lib/utils';
+import { EApiEndpoints, EApiStatus, TApiGenericResponse } from '@/lib/types';
+import { registerForPushNotificationsAsync } from '@/lib/pushNotifications';
 
 type TLoginFormData = {
   email: string;
@@ -31,8 +33,20 @@ const SignIn = () => {
     device: ""
   });
 
-  const { callApi, error, loading, responseData } = useApi<TApiResponse>({method: 'POST', url: 'auth/login' });
-  const { callApi: forceLogin, error: forceError, responseData: forcedLoginData } = useApi<TApiResponse>({method: 'POST', url: 'auth/force-login'})
+  const { callApi, error, loading, responseData } = useApi<TApiResponse>({
+    method: 'POST',
+    url: EApiEndpoints.Login
+  });
+
+  const { callApi: forceLogin, error: forceError, responseData: forcedLoginData } = useApi<TApiResponse>({
+    method: 'POST',
+    url: EApiEndpoints.ForceLogin
+  })
+
+  const { callApi: saveExpoPushToken, responseData: saveExpoPushTokenRes, loading: savePushTokenLoading } = useApi<TApiGenericResponse>({
+    method: 'POST',
+    url: EApiEndpoints.SaveExpoPushToken,
+  });
 
   const { login, user } = useAuth();
 
@@ -53,15 +67,30 @@ const SignIn = () => {
   }
 
   useEffect(() => {
+    if(saveExpoPushTokenRes) {
+      if (saveExpoPushTokenRes.status === EApiStatus.FAILURE) {
+        console.warn("[EXPO_TOKEN_SAVE]:", saveExpoPushTokenRes.message);
+      } 
+      login(responseData?.token || forcedLoginData?.token!);
+    }
+  }, [saveExpoPushTokenRes]);
+
+  useEffect(() => {
     if(responseData) {
       if(responseData.token) {
         console.log("LoggedIn Successfully!");
-        login(responseData.token);
+        registerPushNotifications();
       } else if (responseData.options) {
         forceLogin(formData);
       }
     }
   }, [responseData])
+
+  const registerPushNotifications = async () => {
+    const pushToken = await registerForPushNotificationsAsync();
+    if (pushToken) saveExpoPushToken({ pushToken, token: responseData?.token || forcedLoginData?.token });
+    else login(responseData?.token || forcedLoginData?.token!);
+  }
 
   useEffect(() => {
     if(error) showFailureToast('Something went wrong!', error);
@@ -71,7 +100,7 @@ const SignIn = () => {
     if(forcedLoginData) {
       if(forcedLoginData.token) {
         showSuccessToast('Multiple device logins!', 'Logged out from previous device.');
-        login(forcedLoginData.token);
+        registerPushNotifications();
       }
     }
   }, [forcedLoginData]);
@@ -94,7 +123,7 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className='bg-white h-full w-full'>
-      {loading && <Loader />}
+      {(loading || savePushTokenLoading) && <Loader />}
       <ScrollView contentContainerClassName='h-full px-2 flex flex-col'>
         <Image source={images.dog} className='w-full  rounded-xl' resizeMode='contain' />
         <View className='px-10 -mt-10'>

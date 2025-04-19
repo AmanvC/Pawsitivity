@@ -69,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Since useState set calls are asynchronous, when the user logs in for the first time, the community would be null, then the user will be sent to homepage, then only state would be updated. So making router call asynchronous.
     setTimeout(() => {
       router.push("/(root)/(tabs)/home");
-    }, 0);
+    }, 100);
   };
 
   const logout = async () => {
