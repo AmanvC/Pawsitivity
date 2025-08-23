@@ -5,7 +5,6 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/dog.jpeg",
-    "TODO - AMAN": "Change the main icon here",
     "scheme": "pawsitivity",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

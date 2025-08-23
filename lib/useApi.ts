@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthProvider';
 import { Alert } from 'react-native';
 import { ESecureStoreKeys } from './types';
 import { showFailureToast } from './toastHandler';
+import Constants from "expo-constants";
 
 interface ApiParams {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
@@ -16,7 +17,7 @@ export const useApi = <TData>({
   method,
   url,
 }: Omit<ApiParams, 'data'>) => {
-  const baseUrl = "http://192.168.1.32:3000/api/v1/";
+  const baseUrl = Constants.expoConfig?.extra?.apiBaseUrl;
   const [responseData, setResponseData] = useState<TData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -83,7 +84,7 @@ export const useApi = <TData>({
       }
       const jwtToken = await getKey(ESecureStoreKeys.JWT_TOKEN);
 
-      const res = await fetch('http://192.168.1.32:3000/api/v1/dog/create', {
+      const res = await fetch(`${baseUrl}dog/create`, {
         method: 'POST',
         body: data,
         headers: {
