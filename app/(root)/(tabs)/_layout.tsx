@@ -22,9 +22,9 @@ const TabIcon = ({
     <Text
       className={`${
         focused
-          ? "text-black-300 font-rubik-medium"
-          : "text-black-100 font-rubik"
-      } text-xs w-full text-center mt-1`}
+          ? "text-black-300 font-rubik-extraBold"
+          : "text-black-100 font-rubik-medium"
+      } text-xs w-full text-center mt-0.5`}
     >
       {title}
     </Text>
@@ -72,7 +72,7 @@ const TabsLayout = () => {
             title: "Dogs",
             headerShown: false,
             tabBarIcon: ({ focused }) => (
-              <TabIcon focused={focused} icon={icons.person} title="Dogs" />
+              <TabIcon focused={focused} icon={icons.dog} title="Dogs" />
             ),
           }}
         />
