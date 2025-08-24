@@ -7,11 +7,11 @@ import { Icon } from "react-native-elements";
 type TProps = {
   allItems: { label: string; value: string }[];
   preSelectedValue?: string;
-  dropdownTitle: string;
+  dropdownTitle?: string;
   onChange: (community: string, selectedValue: string) => void;
   dropdownKey: string;
-  isDisabled: boolean;
-  isRequired: boolean
+  isDisabled?: boolean;
+  isRequired?: boolean
 };
 
 const Dropdown = ({
@@ -45,10 +45,12 @@ const Dropdown = ({
 
   return (
     <View style={[styles.container, open && styles.containerOpen]}>
-      <Text style={isDisabled ? styles.labelDisabled : styles.label}>
-        {dropdownTitle}
-        {isRequired && <Text style={styles.required}>*</Text>}
-      </Text>
+      {dropdownTitle && 
+        <Text style={isDisabled ? styles.labelDisabled : styles.label}>
+          {dropdownTitle}
+          {isRequired && <Text style={styles.required}>*</Text>}
+        </Text>
+      }
       <DropDownPicker
         open={open}
         value={value}

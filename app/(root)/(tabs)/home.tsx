@@ -1,17 +1,17 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import icons from '@/constants/icons';
 import Search from '@/components/Search';
 import { useAuth } from '@/context/AuthProvider';
 import { Utils } from '@/lib/utils';
 import images from '@/constants/images';
+import { useRouter } from 'expo-router';
 
 const index = () => {
 
-  const { user, selectedCommunity } = useAuth();
-
-  const onJoinCommunity = () => {};
+  const { user, selectedCommunity, tokenLoaded } = useAuth();
+  const router = useRouter();
 
   const getGreetMessage = () => {
     const hours = new Date().getHours();
@@ -19,6 +19,12 @@ const index = () => {
     if (hours >= 12 && hours < 16) return 'Afternoon';
     return 'Evening';
   };
+
+  useEffect(() => {
+    if (!selectedCommunity) {
+      router.replace("/selectCommunity");
+    }
+  }, [selectedCommunity]);
 
   return (
     <SafeAreaView className="h-full bg-white">

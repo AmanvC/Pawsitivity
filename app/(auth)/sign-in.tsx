@@ -80,18 +80,19 @@ const SignIn = () => {
     if(responseData) {
       if(responseData.token) {
         console.log("LoggedIn Successfully!");
-        registerPushNotifications();
+        login(responseData.token);
+        // registerPushNotifications();
       } else if (responseData.options) {
         forceLogin(formData);
       }
     }
   }, [responseData])
 
-  const registerPushNotifications = async () => {
-    const pushToken = await registerForPushNotificationsAsync();
-    if (pushToken) saveExpoPushToken({ pushToken, token: responseData?.token || forcedLoginData?.token });
-    else login(responseData?.token || forcedLoginData?.token!);
-  }
+  // const registerPushNotifications = async () => {
+  //   const pushToken = await registerForPushNotificationsAsync();
+  //   if (pushToken) saveExpoPushToken({ pushToken, token: responseData?.token || forcedLoginData?.token });
+  //   else login(responseData?.token || forcedLoginData?.token!);
+  // }
 
   useEffect(() => {
     if(error) showFailureToast('Something went wrong!', error);
@@ -101,7 +102,8 @@ const SignIn = () => {
     if(forcedLoginData) {
       if(forcedLoginData.token) {
         showSuccessToast('Multiple device logins!', 'Logged out from previous device.');
-        registerPushNotifications();
+        login(forcedLoginData.token);
+        // registerPushNotifications();
       }
     }
   }, [forcedLoginData]);

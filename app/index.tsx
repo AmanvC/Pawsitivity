@@ -1,22 +1,26 @@
-import { Redirect } from "expo-router";
+import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthProvider";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
+import { useEffect } from "react";
 
 export default function Index() {
-  const { user, tokenLoaded } = useAuth();
+  const { user, tokenLoaded, selectedCommunity } = useAuth();
+  const router = useRouter();
   console.log({tokenLoaded})
+  console.log({selectedCommunity})
 
-  if (!tokenLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  useEffect(() => {
+    if (!tokenLoaded) return;
+    if (!user) {
+      router.replace("/(auth)/sign-in");
+    } else {
+      router.replace("/selectCommunity");
+    }
+  }, [tokenLoaded, user, selectedCommunity]);
 
-  return user ? (
-    <Redirect href="/(root)/(tabs)/home" />
-  ) : (
-    <Redirect href="/(auth)/sign-in" />
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="large" />
+    </View>
   );
 }

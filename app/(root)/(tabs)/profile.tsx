@@ -88,6 +88,12 @@ const Profile = () => {
   const goToFeedingRequestHistoryPage = () => {
     router.push('/feedingRequestsHistory');
   }
+  const handleUserUpdateSelectedCommunity = () => {
+    router.replace({
+      pathname: "/selectCommunity",
+      params: { allowUserToChangeCommunity: "true" },
+    });
+  }
 
   return (
     <SafeAreaView className="h-full bg-white">
@@ -112,6 +118,7 @@ const Profile = () => {
 
         <View className="flex flex-col mt-10">
           <SettingsItem icon={icons.calendar} title="Feeding Requests" onPress={goToFeedingRequestHistoryPage} />
+          <SettingsItem icon={icons.dog} title="Change Community" onPress={handleUserUpdateSelectedCommunity} />
           {/* <SettingsItem icon={icons.wallet} title="Reports History" onPress={handleComingSoon} /> */}
         </View>
 

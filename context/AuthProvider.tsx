@@ -12,13 +12,19 @@ export interface IUser {
   }
 }
 
+export type TCommunityDTO = {
+  _id: string;
+  communityName: string;
+}
+
 interface AuthContextType {
   user: IUser | null;
   login: (token: string) => void;
   logout: () => void;
   tokenLoaded: boolean;
   jwtToken: string | null;
-  selectedCommunity: IUser['data']['joinedCommunities'][number] | null
+  selectedCommunity: IUser['data']['joinedCommunities'][number] | null;
+  updateSelectedCommunity: (community: TCommunityDTO) => void
 }
 
 // Create Context
@@ -45,6 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loadUser = async () => {
       try {
         const selectedCommunity = await getKey(ESecureStoreKeys.SELECTED_COMMUNITY);
+        console.log({LoadUserSelectedCommunity: selectedCommunity})
         if(selectedCommunity) setSelectedCommunity(JSON.parse(selectedCommunity));
         const token = await getKey(ESecureStoreKeys.JWT_TOKEN);
         if (token) {
@@ -63,25 +70,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (token: string) => {
     await saveKey(ESecureStoreKeys.JWT_TOKEN, token);
     const decodedToken = jwtDecode<IUser>(token);
-    await saveKey(ESecureStoreKeys.SELECTED_COMMUNITY, JSON.stringify(decodedToken.data.joinedCommunities[0]) || '');
     setUser(decodedToken);
     setJwtToken(token);
     // Since useState set calls are asynchronous, when the user logs in for the first time, the community would be null, then the user will be sent to homepage, then only state would be updated. So making router call asynchronous.
     setTimeout(() => {
-      router.push("/(root)/(tabs)/home");
-    }, 100);
+      router.replace("/(root)/(tabs)/home");
+    }, 10);
   };
 
   const logout = async () => {
     await removeKey(ESecureStoreKeys.SELECTED_COMMUNITY);
     await removeKey(ESecureStoreKeys.JWT_TOKEN);
-    router.push("/(auth)/sign-in");
+    router.replace("/(auth)/sign-in");
     setUser(null);
     setJwtToken(null);
+    setSelectedCommunity(null);
   };
 
+  const updateSelectedCommunity = async (community: TCommunityDTO) => {
+    await saveKey(ESecureStoreKeys.SELECTED_COMMUNITY, JSON.stringify(community));
+    setSelectedCommunity(community);
+    router.replace("/(root)/(tabs)/home");
+  }
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, tokenLoaded, jwtToken, selectedCommunity }}>
+    <AuthContext.Provider value={{ user, login, logout, tokenLoaded, jwtToken, selectedCommunity, updateSelectedCommunity }}>
       {children}
     </AuthContext.Provider>
   );
