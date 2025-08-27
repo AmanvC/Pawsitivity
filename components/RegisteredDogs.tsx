@@ -69,13 +69,13 @@ const RegisteredDogs = () => {
   }
 
   return (
-    <SafeAreaView className='h-screen w-full'>
+    <SafeAreaView className='flex-1 w-full'>
       {loading && <Loader />}
       {
         !filteredDogsData.length ? 
         (!loading && <><Text style={{ textAlign: "center" }}>No dogs registered in {selectedCommunity.communityName}</Text></>) : 
         (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 220 }}>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
             <View className='mb-5'>
               <Filters filters={filters} onFilterChange={onFilterChange} />
             </View>
