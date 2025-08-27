@@ -31,7 +31,7 @@ const index = () => {
 
   return (
     <SafeAreaView className="h-full bg-white">
-      <View className="px-5 flex-1">
+      <View className="px-5 h-[calc(100%-70px)] flex">
         <View className="flex flex-row items-center justify-between mt-5">
           <View className="flex flex-row">
             <View className='size-12 bg-black-300 flex justify-center items-center rounded-full'>
@@ -52,22 +52,22 @@ const index = () => {
           />
         </View>
 
-        <View className={`mt-4 ${Platform.select({web: "h-[75%] overflow-scroll"})}`}>
+        <View className={`mt-4 ${Platform.select({web: "flex-1 overflow-scroll"})}`}>
           {/* <Text className={`font-rubik-medium text-4xl text-blue-900 text-center ${Platform.select({web: "text-[30px]"})}`}>Welcome to Pawsitivity</Text> */}
           <Image
             source={images.dogHi}
             resizeMode="contain"
             className="w-full h-[83%]"
-            style={Platform.OS === "web" ? { width: "100%", height: "100%" } : {}}
+            style={Platform.OS === "web" ? { width: "100%", height: "80%" } : {}}
           />
 
           <View className='w-full flex flex-row justify-center items-center relative bottom-4'>
-            <Text className={`text-2xl font-rubik-medium text-blue-900 ${Platform.select({web: "text-[20px]"})}`}>Pause for Paws </Text>
+            <Text className={`text-2xl font-rubik-medium text-blue-900 ${Platform.select({web: "text-[16px]"})}`}>Pause for Paws </Text>
             <Image
               source={images.paws}
               resizeMode="contain"
               className="h-10 w-10"
-              style={Platform.OS === "web" ? { height: 40, width: 40 } : {}}
+              style={Platform.OS === "web" ? { height: 30, width: 30 } : {}}
             />
           </View>
 

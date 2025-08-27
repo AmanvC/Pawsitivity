@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const feedingRequest = () => {
   return (
-    <SafeAreaView className="h-full px-5 bg-white" style={Platform.OS === "web" ? { paddingLeft: 12, paddingRight: 12 } : {}}>
+    <SafeAreaView className={`px-5 h-full bg-white ${Platform.OS === 'web' && "h-[calc(100%-70px)]"}`} style={Platform.OS === "web" ? { paddingLeft: 12, paddingRight: 12 } : {}}>
       <Text className="mt-5 mb-4 text-2xl font-rubik-bold">Feeding Request 🦴</Text>
       <SideBySideTabs 
         tabs={[

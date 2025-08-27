@@ -45,7 +45,7 @@ const SideBySideTabs: React.FC<SideBySideTabsProps> = ({ tabs, currentActiveTab 
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", marginTop: 10},
+  container: { backgroundColor: "#fff", marginTop: 10, height: "100%"},
   tabContainer: {
     flexDirection: "row",
     borderRadius: 8,
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   tabText: { fontSize: 16, color: "#fff" }, // Default text color (white)
   activeTabText: { color: "#191D31", fontWeight: "bold" }, // Active tab text color (#191D31)
-  content: { marginTop: 20, alignItems: "center" },
+  content: { marginTop: 20, alignItems: "center", flex: 1, paddingBottom: 100 },
 });
 
 export default SideBySideTabs;
