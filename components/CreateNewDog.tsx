@@ -205,7 +205,7 @@ const CreateNewDog = () => {
         <TouchableOpacity onPress={() => getAllInfo()} activeOpacity={0.8} className='bg-slate-400 w-[50%] self-center mt-3 p-5 rounded-lg'>
           <Text className='text-center color-white font-bold text-xl'>Retry</Text>
         </TouchableOpacity>
-      </View> : (
+      </View > : (
         <FlatList
         data={[]} // No actual list items
         renderItem={null as any}
@@ -213,7 +213,7 @@ const CreateNewDog = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 130 }}
         ListHeaderComponent={
-          <View className="flex gap-5">
+          <View className="flex gap-5" style={Platform.select({web: {paddingBottom: 120}})}>
             <Dropdown
               dropdownKey="community"
               dropdownTitle="Select Community"

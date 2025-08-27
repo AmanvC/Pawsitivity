@@ -127,7 +127,7 @@ const CreateFeedingRequest = () => {
   return (
     <SafeAreaView className={`${Platform.select({web: "h-full w-full overflow-scroll"})}`}>
       {(dogGroupsLoading || createFeedingRequestLoading) && <Loader />}
-      <View className="flex gap-5" style={Platform.select({web: {paddingBottom: 40}})}>
+      <View className="flex gap-5" style={Platform.select({web: {paddingBottom: 120}})}>
         <FlatList
           data={[]} // No actual list items
           renderItem={null as any}
