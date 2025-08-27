@@ -198,7 +198,7 @@ const CreateNewDog = () => {
   }
 
   return (
-    <SafeAreaView className={Platform.select({web: 'h-screen w-full overflow-scroll pb-[80px]', android: 'h-full w-full', ios: 'h-full w-full'})}>
+    <SafeAreaView className={Platform.select({web: 'flex-1 w-full overflow-scroll pb-[80px]', android: 'h-full w-full', ios: 'h-full w-full'})}>
       {(dogGroupsLoading || createDogLoading) && <Loader />}
       {dogGroupInfoError ? <View>
         <Text className='text-center mt-5'>Something went wrong!</Text>
