@@ -89,7 +89,6 @@ export const useApi = <TData>({
         body: data,
         headers: {
           Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'multipart/form-data'
         },
       })
       const result = await res.json();

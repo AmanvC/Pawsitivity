@@ -10,6 +10,7 @@ import { showFailureToast, showInfoToast, showSuccessToast } from '@/lib/toastHa
 import { useApi } from '@/lib/useApi'
 import {
   EApiEndpoints,
+  EApiStatus,
   TApiGenericResponse,
   TFilterType,
   TREQUEST_GetAllCommunityDogGroupsAndDogInfo,
@@ -120,15 +121,23 @@ const CreateNewDog = () => {
     apiFormData.append("abcStatus", String(formData.abcStatus));
     apiFormData.append("vaccinationStatus", String(formData.vaccinationStatus));
     apiFormData.append("vaccinationDetails", JSON.stringify(formData.vaccinationDetails));
-  
+    
     if (formData.image) {
-      const imageData = {
-        uri: formData.image.uri,
-        name: formData.image.name || `photo_${Date.now()}.jpg`,
-        type: 'image/png',
-      };
-  
-      apiFormData.append("image", imageData as any);
+      if (Platform.OS === "web") {
+        // Convert blob URI to File
+        const response = await fetch(formData.image.uri);
+        const blob = await response.blob();
+        const file = new File([blob], formData.image.name, { type: formData.image.type });
+        apiFormData.append("image", file);
+      } else {
+        // Native
+        const imageData = {
+          uri: formData.image.uri,
+          name: formData.image.name || `photo_${Date.now()}.jpg`,
+          type: formData.image.type || "image/jpeg",
+        };
+        apiFormData.append("image", imageData as any);
+      }
     }
     callApiUsingFetch(apiFormData);
   };
@@ -136,9 +145,11 @@ const CreateNewDog = () => {
 
   useEffect(() => {
     if(createDogResponse) {
-      if(createDogResponse.status === 'SUCCESS') {
+      if(createDogResponse.status === EApiStatus.SUCCESS) {
         showSuccessToast(createDogResponse.message);
         setFormData(defaultValues);
+      } else if (createDogResponse.status === EApiStatus.FAILURE) {
+        showFailureToast(createDogResponse.message);
       }
     }
   }, [createDogResponse]);
