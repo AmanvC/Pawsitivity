@@ -1,4 +1,4 @@
-import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, Platform, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import ImageUploader from './ImageUploader'
 import Dropdown from './Dropdown'
@@ -17,7 +17,6 @@ import {
 } from '@/lib/types'
 import { useAuth } from '@/context/AuthProvider'
 import Loader from './Loader'
-import * as MediaLibrary from 'expo-media-library';
 import { Utils } from '@/lib/utils'
 
 type TFormData = {
@@ -61,10 +60,6 @@ const CreateNewDog = () => {
   const { callApi: getDogGroupsInfo, responseData: dogGroupsInfoRes, error: dogGroupInfoError, loading: dogGroupsLoading } = useApi<TRESPONSE_GetAllCommunityDogGroupsAndDogInfo>({ method: 'POST', url: EApiEndpoints.GetDogGroupsInfoInACommunity});
 
   const { responseData: createDogResponse, error: createDogError, loading: createDogLoading, callApiUsingFetch } = useApi<TApiGenericResponse>({ method: 'POST', url: EApiEndpoints.CreateDog })
-  
-  useEffect(() => {
-    getAllInfo();
-  }, []);
 
   const getAllInfo = () => {
     getDogGroupsInfo({ communityId: selectedCommunity?._id } as TREQUEST_GetAllCommunityDogGroupsAndDogInfo );
@@ -203,7 +198,7 @@ const CreateNewDog = () => {
   }
 
   return (
-    <SafeAreaView className='h-full w-full'>
+    <SafeAreaView className={Platform.select({web: 'h-screen w-full overflow-scroll pb-[80px]', android: 'h-full w-full', ios: 'h-full w-full'})}>
       {(dogGroupsLoading || createDogLoading) && <Loader />}
       {dogGroupInfoError ? <View>
         <Text className='text-center mt-5'>Something went wrong!</Text>
@@ -335,11 +330,18 @@ const VaccinationDetailsBlock = ({ values, onDelete, onUpdate }: { values: TVacc
   return (
     <View className='relative p-4 border border-primary-200 bg-white rounded-lg'>
       <TouchableOpacity
-        className='absolute right-4 top-4 z-50'
+        className='absolute right-2 top-2 z-50'
         onPress={handleOnDelete}
         activeOpacity={0.5}
       >
-        <Image className='size-6' source={icons.deleteIcon} />
+        <Image
+          source={icons.deleteIcon}
+          style={Platform.select({
+            web: { height: 20, width: 20 },
+            android: { height: 24, width: 24 },
+            ios: { height: 24, width: 24 }
+          })} 
+        />
       </TouchableOpacity>
       <Textbox
         formKey='vaccinationName'

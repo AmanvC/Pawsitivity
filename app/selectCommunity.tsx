@@ -33,7 +33,7 @@ const SelectCommunity = () => {
   }
 
   const handleContinue = () => {
-    if(!userSelectedCommunityId.length) {
+    if(!userSelectedCommunityId || !userSelectedCommunityId.length) {
       showInfoToast('Please select a community to continue!');
       return;
     }

@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Image, ImageSourcePropType, Text, View } from "react-native";
+import { Image, ImageSourcePropType, Platform, Text, View } from "react-native";
 
 import icons from "@/constants/icons";
 
@@ -12,19 +12,33 @@ const TabIcon = ({
   icon: ImageSourcePropType;
   title: string;
 }) => (
-  <View className="flex-1 mt-3 flex flex-col items-center">
+  <View
+    className={Platform.select({
+      ios: "flex-1 mt-2 flex flex-col items-center",
+      android: "flex-1 mt-2 flex flex-col items-center",
+      web: "flex-1 flex flex-col items-center h-full justify-center",
+    })}
+  >
     <Image
       source={icon}
       tintColor={focused ? "#191D31" : "#666876"}
       resizeMode="contain"
-      className="size-6"
+      style={Platform.select({
+        ios: { width: 24, height: 24 },
+        android: { width: 24, height: 24 },
+        web: { width: 20, height: 20 },
+      })}
     />
     <Text
       className={`${
         focused
           ? "text-black-300 font-rubik-extraBold"
           : "text-black-100 font-rubik-medium"
-      } text-xs w-full text-center mt-0.5`}
+      } ${Platform.select({
+        ios: "text-xs",
+        android: "text-xs",
+        web: "text-sm",
+      })} text-center mt-1 w-full`}
     >
       {title}
     </Text>

@@ -1,4 +1,4 @@
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Filters, { TFilterDataType } from './Filters'
@@ -20,16 +20,16 @@ const RegisteredDogs = () => {
 
   const { callApi, responseData, loading, error } = useApi<TRESPONSE_GetRegisteredDogs>({ method: 'POST', url: 'dog/getAll'})
 
-  useEffect(() => {
-    if(!selectedCommunity) return;
-    callApi({ communityId: selectedCommunity._id } as TREQUEST_GetRegisteredDogs);
-  }, []);
+  // useEffect(() => {
+  //   if(!selectedCommunity) return;
+  //   callApi({ communityId: selectedCommunity._id } as TREQUEST_GetRegisteredDogs);
+  // }, []);
 
   useFocusEffect(
     useCallback(() => {
       setDogsData([]);
       callApi({ communityId: selectedCommunity?._id } as TREQUEST_GetRegisteredDogs);
-    }, [])
+    }, [selectedCommunity])
   );
 
   useEffect(() => {
@@ -69,21 +69,27 @@ const RegisteredDogs = () => {
   }
 
   return (
-    <SafeAreaView className='h-full w-full'>
+    <SafeAreaView className='h-screen w-full'>
       {loading && <Loader />}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 130 }}>
-        <View className='mb-5'>
-          <Filters filters={filters} onFilterChange={onFilterChange} />
-        </View>
-        {
-          filteredDogsData.map(dogItem => (
-            <DogItem
-              key={dogItem._id}
-              dogMetadata={dogItem}
-            />
-          ))
-        }
-      </ScrollView>
+      {
+        !filteredDogsData.length ? 
+        (!loading && <><Text style={{ textAlign: "center" }}>No dogs registered in {selectedCommunity.communityName}</Text></>) : 
+        (
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 220 }}>
+            <View className='mb-5'>
+              <Filters filters={filters} onFilterChange={onFilterChange} />
+            </View>
+            {
+              filteredDogsData.map(dogItem => (
+                <DogItem
+                  key={dogItem._id}
+                  dogMetadata={dogItem}
+                />
+              ))
+            }
+          </ScrollView>
+        )
+      }
     </SafeAreaView>
   )
 }
@@ -93,7 +99,15 @@ const DogItem = ({dogMetadata}: {dogMetadata: TRegisteredDogDTO}): React.ReactNo
 
   return (
     <View className={`p-4 mb-4 rounded-md border border-gray-300 overflow-hidden ${isExpanded ? 'h-auto' : 'h-44'}`}>
-      <Image source={isExpanded ? icons.chevronUp : icons.chevronDown} className='size-12 absolute right-0 top-0 opacity-50 '/>
+      <Image
+        source={isExpanded ? icons.chevronUp : icons.chevronDown}
+        className='absolute right-0 top-0 opacity-50'
+        style={Platform.select({
+          web: { width: 48, height: 48 }, 
+          android: { width: 48, height: 48 },
+          ios: { width: 48, height: 48 },
+        })}  
+      />
       <TouchableOpacity
         activeOpacity={1}
         onPress={() => setIsExpanded(prev => !prev)}
@@ -120,35 +134,37 @@ const DogItem = ({dogMetadata}: {dogMetadata: TRegisteredDogDTO}): React.ReactNo
           </View>
         </View>
       </TouchableOpacity>
-      <View>
-        <View className='pt-3 pb-3 border-t border-gray-200'>
-          {dogMetadata.image
-            ? <View className="items-center justify-start">
-                <Image 
-                  source={{ uri: dogMetadata.image }}
-                  className="w-full aspect-[9/16] rounded-lg" 
-                  resizeMode="cover"
-                />
-              </View>
-            : <Text className='text-center font-rubik-medium text-gray-300'>No Image Available!</Text>
-          }
-        </View>
-        {dogMetadata.vaccinationDetails.length !== 0 && (
-          <View className='mb-2 pb-3 pt-3 border-t border-gray-200'>
-            <Text className='font-rubik-medium'>Last Vaccination details</Text>
-            <View>
-              <Text className=''>Name: <Text className='font-rubik-medium'>{dogMetadata.vaccinationDetails[0].vaccinationName}</Text></Text>
-              <Text className=''>Date: <Text className='font-rubik-medium'>{dogMetadata.vaccinationDetails[0].vaccinationDate ? Utils.getFormattedDate(dogMetadata.vaccinationDetails[0].vaccinationDate) : 'Not Available'}</Text></Text>
-              <Text className=''>Vaccinated By: <Text className='font-rubik-medium'>{dogMetadata.vaccinationDetails[0].veterinaryName || 'Not Available'}</Text></Text>
-            </View>
+      {isExpanded && 
+        <View>
+          <View className='pt-3 pb-3 border-t border-gray-200'>
+            {dogMetadata.image
+              ? <View className="items-center justify-start">
+                  <Image 
+                    source={{ uri: dogMetadata.image }}
+                    className="w-full aspect-[9/16] rounded-lg" 
+                    resizeMode="cover"
+                  />
+                </View>
+              : <Text className='text-center font-rubik-medium text-gray-300'>No Image Available!</Text>
+            }
           </View>
-        )}
-        <View className='pt-3 border-t border-gray-200'>
-          <Text className='font-rubik-medium mb-1'>Vaccination History</Text>
-          {dogMetadata.vaccinationDetails.length === 0 ? <Text className='text-gray-500'>No vaccination details available!</Text> : <TableComponent vaccinationDetails={dogMetadata.vaccinationDetails} />}
+          {dogMetadata.vaccinationDetails.length !== 0 && (
+            <View className='mb-2 pb-3 pt-3 border-t border-gray-200'>
+              <Text className='font-rubik-medium'>Last Vaccination details</Text>
+              <View>
+                <Text className=''>Name: <Text className='font-rubik-medium'>{dogMetadata.vaccinationDetails[0].vaccinationName}</Text></Text>
+                <Text className=''>Date: <Text className='font-rubik-medium'>{dogMetadata.vaccinationDetails[0].vaccinationDate ? Utils.getFormattedDate(dogMetadata.vaccinationDetails[0].vaccinationDate) : 'Not Available'}</Text></Text>
+                <Text className=''>Vaccinated By: <Text className='font-rubik-medium'>{dogMetadata.vaccinationDetails[0].veterinaryName || 'Not Available'}</Text></Text>
+              </View>
+            </View>
+          )}
+          <View className='pt-3 border-t border-gray-200'>
+            <Text className='font-rubik-medium mb-1'>Vaccination History</Text>
+            {dogMetadata.vaccinationDetails.length === 0 ? <Text className='text-gray-500'>No vaccination details available!</Text> : <TableComponent vaccinationDetails={dogMetadata.vaccinationDetails} />}
+          </View>
+          <Text className='text-xs w-full text-right mt-2 text-gray-500'>Last Updated By: {dogMetadata.lastUpdatedBy.name} on {Utils.getFormattedDate(dogMetadata.updatedAt)}</Text>
         </View>
-        <Text className='text-xs w-full text-right mt-2 text-gray-500'>Last Updated By: {dogMetadata.lastUpdatedBy.name} on {Utils.getFormattedDate(dogMetadata.updatedAt)}</Text>
-      </View>
+      }
     </View>
   )
 }

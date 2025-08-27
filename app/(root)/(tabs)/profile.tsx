@@ -1,6 +1,7 @@
 import {
   Image,
   ImageSourcePropType,
+  Platform,
   SafeAreaView,
   ScrollView,
   Text,
@@ -38,13 +39,29 @@ const SettingsItem = ({
     className="flex flex-row items-center justify-between py-3"
   >
     <View className="flex flex-row items-center gap-3">
-      <Image source={icon} className="size-6" />
-      <Text className={`text-lg font-rubik-medium text-black-300 ${textStyle}`}>
+    <Image
+        source={icon}
+        style={Platform.select({
+          web: { width: 24, height: 24 }, 
+          android: { width: 24, height: 24 },
+          ios: { width: 24, height: 24 },
+        })}
+      />
+      <Text className={`text-lg font-rubik-medium text-black-300 ${textStyle}`} style={Platform.select({web: {fontSize: 16}})}>
         {title}
       </Text>
     </View>
 
-    {showArrow && <Image source={icons.rightArrow} className="size-5" />}
+    {showArrow && 
+      <Image
+        source={icons.rightArrow}
+        style={Platform.select({
+          web: { width: 20, height: 20 }, 
+          android: { width: 20, height: 20 },
+          ios: { width: 20, height: 20 },
+        })}
+      />
+    }
   </TouchableOpacity>
 );
 
@@ -104,13 +121,30 @@ const Profile = () => {
       >
         <View className="flex flex-row items-center justify-between mt-5">
           <Text className="text-2xl font-rubik-bold">Profile</Text>
-          <Image source={icons.bell} className="size-5" />
+          <Image
+            source={icons.bell}
+            style={Platform.select({
+              web: { width: 24, height: 24 }, 
+              android: { width: 24, height: 24 },
+              ios: { width: 24, height: 24 },
+            })}
+          />
         </View>
 
         <View className="flex flex-row justify-center mt-5">
           <View className="flex flex-col items-center relative mt-5">
-            <View className="bg-black-300 rounded-full h-44 w-44 flex items-center justify-center">
-              <Text className="text-8xl text-white relative top-3">{Utils.getGroupNameAvatar(user?.data.name || '')}</Text>
+            <View
+              className="bg-black-300 rounded-full h-44 w-44 flex items-center justify-center"
+              style={Platform.select({
+                web: { height: 132, width: 132 }
+              })}  
+            >
+              <Text
+                className="text-8xl text-white relative top-3"
+                style={Platform.select({
+                  web: { top: 0, fontSize: 72 }
+                })}  
+              >{Utils.getGroupNameAvatar(user?.data.name || '')}</Text>
             </View>
             <Text className="text-2xl font-rubik-bold mt-2">{user?.data.name}</Text>
           </View>

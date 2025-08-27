@@ -37,7 +37,7 @@ const FeedingRequestBlock = ({
       {status && <Text className={`absolute right-4 -top-3.5 text-sm py-1 px-2 border rounded-2xl ${status === 'ACCEPTED' ? 'border-green-500 bg-green-100' : 'border-red-500 bg-red-100'}`}>{status === 'ACCEPTED' ? 'Accepted' : 'Pending'}</Text>}
       <View className='flex flex-row flex-1 gap-4'>
         <View className='h-20 w-20 bg-gray-100 rounded-full flex justify-center items-center'>
-          <Text className='text-3xl font-medium'>{Utils.getGroupNameAvatar(dogGroupName)}</Text>  
+          <Text className='text-3xl font-medium'>{Utils.getGroupNameAvatar(dogGroupName) ?? ''}</Text>  
         </View>
         <View className='flex-1'>
           <Text className='font-bold mb-2 text-lg'>{dogGroupName}</Text>

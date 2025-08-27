@@ -6,7 +6,7 @@ import {
   Text,
   Alert,
   StyleSheet,
-  ActivityIndicator,
+  Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import icons from "@/constants/icons";
@@ -86,7 +86,15 @@ const ImageUploader = ({ formKey, onChange, isImageAvailable }: ImageUploaderPro
         >
           <View className="flex flex-row justify-center items-center">
             <Text className="text-white font-rubik-medium text-center">Upload</Text>
-            <Image source={icons.uploadWhite} className="size-6 ml-2 relative bottom-0.5" />
+            <Image
+              source={icons.uploadWhite}
+              className="ml-2 relative bottom-0.5"
+              style={Platform.select({
+                web: { height: 24, width: 24 },
+                android: { height: 24, width: 24 },
+                ios: { height: 24, width: 24 }
+              })}  
+            />
           </View>
         </TouchableOpacity>
 
@@ -97,7 +105,15 @@ const ImageUploader = ({ formKey, onChange, isImageAvailable }: ImageUploaderPro
         >
           <View className="flex flex-row justify-center items-center">
             <Text className="text-white font-rubik-medium text-center">Capture</Text>
-            <Image source={icons.cameraWhite} className="size-6 ml-2 relative bottom-0.5" />
+            <Image
+              source={icons.cameraWhite}
+              className="ml-2 relative bottom-0.5"
+              style={Platform.select({
+                web: { height: 24, width: 24 },
+                android: { height: 24, width: 24 },
+                ios: { height: 24, width: 24 }
+              })}  
+            />
           </View>
         </TouchableOpacity>
       </View>
@@ -115,5 +131,3 @@ const ImageUploader = ({ formKey, onChange, isImageAvailable }: ImageUploaderPro
 };
 
 export default ImageUploader;
-
-const styles = StyleSheet.create({});

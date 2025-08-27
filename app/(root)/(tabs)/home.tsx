@@ -1,17 +1,17 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import icons from '@/constants/icons';
-import Search from '@/components/Search';
 import { useAuth } from '@/context/AuthProvider';
 import { Utils } from '@/lib/utils';
 import images from '@/constants/images';
-import { useRouter } from 'expo-router';
+import { useRootNavigationState, useRouter } from 'expo-router';
 
 const index = () => {
 
   const { user, selectedCommunity, tokenLoaded } = useAuth();
   const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
 
   const getGreetMessage = () => {
     const hours = new Date().getHours();
@@ -21,10 +21,13 @@ const index = () => {
   };
 
   useEffect(() => {
+    // Wait until router is mounted
+    if (!rootNavigationState?.key) return;
+
     if (!selectedCommunity) {
       router.replace("/selectCommunity");
     }
-  }, [selectedCommunity]);
+  }, [selectedCommunity, rootNavigationState]);
 
   return (
     <SafeAreaView className="h-full bg-white">
@@ -32,22 +35,40 @@ const index = () => {
         <View className="flex flex-row items-center justify-between mt-5">
           <View className="flex flex-row">
             <View className='size-12 bg-black-300 flex justify-center items-center rounded-full'>
-              <Text className='text-white font-rubik-bold'>{Utils.getGroupNameAvatar(user?.data.name || '')}</Text>
+              <Text className={`text-white font-rubik-bold ${Platform.select({web: "text-xl"})}`}>{Utils.getGroupNameAvatar(user?.data.name || '')}</Text>
             </View>
             <View className="flex flex-col items-start ml-2 justify-center">
               <Text className="text-xs font-rubik text-black-100">Good {getGreetMessage()}</Text>
               <Text className="text-base font-rubik-medium text-black-300">{user?.data.name}</Text>
             </View>
           </View>
-          <Image source={icons.bell} className="size-6" />
+          <Image
+            source={icons.bell}
+            style={Platform.select({
+              web: { width: 24, height: 24 }, 
+              android: { width: 24, height: 24 },
+              ios: { width: 24, height: 24 },
+            })}
+          />
         </View>
 
-        <View className="mt-10">
-          <Text className="font-rubik-medium text-4xl text-blue-900 text-center">Welcome to Pawsitivity</Text>
-          <Image source={images.dogHi} className='w-full h-5/6' resizeMode='contain' />
+        <View className={`mt-10 ${Platform.select({web: "h-[70%]"})}`}>
+          <Text className={`font-rubik-medium text-4xl text-blue-900 text-center ${Platform.select({web: "text-[30px]"})}`}>Welcome to Pawsitivity</Text>
+          <Image
+            source={images.dogHi}
+            resizeMode="contain"
+            className="w-full h-[83%]"
+            style={Platform.OS === "web" ? { width: "100%", height: "100%" } : {}}
+          />
+
           <View className='w-full flex flex-row justify-center items-center relative bottom-10'>
-            <Text className='text-2xl font-rubik-medium text-blue-900'>Pause for Paws </Text>
-            <Image source={images.paws} className='h-10 w-10' resizeMode='contain' />
+            <Text className={`text-2xl font-rubik-medium text-blue-900 ${Platform.select({web: "text-[20px]"})}`}>Pause for Paws </Text>
+            <Image
+              source={images.paws}
+              resizeMode="contain"
+              className="h-10 w-10"
+              style={Platform.OS === "web" ? { height: 40, width: 40 } : {}}
+            />
           </View>
 
           {/* <View className="flex flex-row justify-between items-center border-b pb-3 border-primary-200">

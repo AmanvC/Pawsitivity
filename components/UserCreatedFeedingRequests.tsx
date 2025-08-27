@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { EApiEndpoints, EApiStatus, TRESPONSE_GetUserCreatedFeedingRequests } from '@/lib/types';
 import { useApi } from '@/lib/useApi';
@@ -57,6 +57,4 @@ const UserCreatedFeedingRequests = () => {
   )
 }
 
-export default UserCreatedFeedingRequests
-
-const styles = StyleSheet.create({})
+export default UserCreatedFeedingRequests;

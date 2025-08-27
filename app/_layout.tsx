@@ -5,11 +5,8 @@ import { useEffect, useState } from "react";
 import { AuthProvider } from "@/context/AuthProvider";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/lib/toastConfig";
-import { useNotificationHandler } from "@/lib/useNotificationHandler";
 
 export default function AppLayout() {
-
-  useNotificationHandler();
 
   const [fontsLoaded] = useFonts({
     "Rubik-bold": require("../assets/fonts/Rubik-Bold.ttf"),

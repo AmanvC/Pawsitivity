@@ -1,4 +1,4 @@
-import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { FlatList, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Dropdown from './Dropdown'
@@ -39,10 +39,6 @@ const CreateFeedingRequest = () => {
   const { callApi: getDogGroupsInfo, responseData: dogGroupsInfoRes, error: dogGroupInfoError, loading: dogGroupsLoading } = useApi<TRESPONSE_GetAllCommunityDogGroupsAndDogInfo>({ method: 'POST', url: EApiEndpoints.GetDogGroupsInfoInACommunity});
 
   const { callApi: createFeedingRequest, responseData: createFeedingRequestResponse, error: createFeedingRequestError, loading: createFeedingRequestLoading } = useApi<TApiGenericResponse>({ method: 'POST', url: EApiEndpoints.CreateFeedingRequest })
-
-  useEffect(() => {
-    getAllInfo();
-  }, []);
 
   const getAllInfo = () => {
     getDogGroupsInfo({ communityId: selectedCommunity?._id } as TREQUEST_GetAllCommunityDogGroupsAndDogInfo );
@@ -129,9 +125,9 @@ const CreateFeedingRequest = () => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className={`${Platform.select({web: "h-screen w-full overflow-scroll"})}`}>
       {(dogGroupsLoading || createFeedingRequestLoading) && <Loader />}
-      <View className="flex gap-5">
+      <View className="flex gap-5" style={Platform.OS === 'web' ? { paddingBottom: 80 } : {}}>
         <FlatList
           data={[]} // No actual list items
           renderItem={null as any}

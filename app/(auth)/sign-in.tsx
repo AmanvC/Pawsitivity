@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import images from '@/constants/images';
 import Textbox from '@/components/Textbox';
@@ -10,6 +10,7 @@ import { Utils } from '@/lib/utils';
 import { EApiEndpoints, EApiStatus, TApiGenericResponse } from '@/lib/types';
 import { registerForPushNotificationsAsync } from '@/lib/pushNotifications';
 import ScreenWrapper from '@/components/ScreenWrapper';
+import { Platform, StyleSheet } from "react-native";
 
 type TLoginFormData = {
   email: string;
@@ -127,8 +128,32 @@ const SignIn = () => {
   return (
     <ScreenWrapper>
       {(loading || savePushTokenLoading) && <Loader />}
-      <View className='p-2 overflow-hidden'><Image source={images.dog} className='w-full' resizeMode='contain' /></View>
-      <View className='px-10 -mt-10'>
+      <View
+        className={Platform.select({
+          ios: "p-2 overflow-hidden",
+          android: "p-2 overflow-hidden",
+          web: "h-[50%] w-[100%] p-2 overflow-hidden",
+        })}
+      >
+        <View className="w-full h-full">
+          <Image
+            source={images.dog}
+            resizeMode="cover"
+            className={Platform.select({
+              ios: "w-full h-full rounded-xl",
+              android: "w-full h-full rounded-xl",
+              web: "max-h-full max-w-full rounded-xl",
+            })}
+          />
+        </View>
+      </View>
+      <View
+        className={Platform.select({
+          ios: "px-10 -mt-10",
+          android: "px-10 -mt-10",
+          web: "px-10 mt-2",
+        })}
+      >
         <Text className='text-2xl text-center uppercase font-rubik text-black-200'>Welcome to Pawsitivity</Text>
       </View>
       <View className='mt-5 px-5 flex gap-4'>
