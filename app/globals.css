@@ -9,3 +9,8 @@ a {
   text-decoration: none !important;
   color: inherit !important;
 }
+
+html, body, #root {
+  height: 100% !important;
+  overflow: auto !important;
+}

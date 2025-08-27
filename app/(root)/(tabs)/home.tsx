@@ -1,4 +1,4 @@
-import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, Platform, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import icons from '@/constants/icons';
@@ -52,8 +52,8 @@ const index = () => {
           />
         </View>
 
-        <View className={`mt-10 ${Platform.select({web: "h-[70%]"})}`}>
-          <Text className={`font-rubik-medium text-4xl text-blue-900 text-center ${Platform.select({web: "text-[30px]"})}`}>Welcome to Pawsitivity</Text>
+        <View className={`mt-4 ${Platform.select({web: "h-[75%] overflow-scroll"})}`}>
+          {/* <Text className={`font-rubik-medium text-4xl text-blue-900 text-center ${Platform.select({web: "text-[30px]"})}`}>Welcome to Pawsitivity</Text> */}
           <Image
             source={images.dogHi}
             resizeMode="contain"
@@ -61,7 +61,7 @@ const index = () => {
             style={Platform.OS === "web" ? { width: "100%", height: "100%" } : {}}
           />
 
-          <View className='w-full flex flex-row justify-center items-center relative bottom-10'>
+          <View className='w-full flex flex-row justify-center items-center relative bottom-4'>
             <Text className={`text-2xl font-rubik-medium text-blue-900 ${Platform.select({web: "text-[20px]"})}`}>Pause for Paws </Text>
             <Image
               source={images.paws}

@@ -50,7 +50,7 @@ const SelectCommunity = () => {
   }, [selectedCommunity])
 
   return (
-    <View className='h-full flex flex-col items-center justify-center p-10 gap-20'>
+    <View className='h-full flex flex-col items-center justify-center p-10 gap-8'>
       <Image source={images.paws} className='h-40 aspect-square' resizeMode='contain' />
       <View>
         <Text className='font-rubik-light text-black-300 text-4xl text-center mb-10'>Select a community</Text>
